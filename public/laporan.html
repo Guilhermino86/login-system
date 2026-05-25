@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laporan - KasirKu</title>
+  <link rel="stylesheet" href="kasir-style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">🛒</div>
+    <span class="brand-name">KasirKu</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="kasir.html" class="nav-item"><span class="nav-icon">🧾</span><span>Kasir</span></a>
+    <a href="produk.html" class="nav-item"><span class="nav-icon">📦</span><span>Produk</span></a>
+    <a href="riwayat.html" class="nav-item"><span class="nav-icon">📋</span><span>Riwayat</span></a>
+    <a href="laporan.html" class="nav-item aktif"><span class="nav-icon">📊</span><span>Laporan</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="avatarSidebar">K</div>
+      <div>
+        <div class="user-nama" id="namaSidebar">-</div>
+        <div class="user-role">Kasir</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="keluar()">🚪</button>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1 class="page-title">Laporan Penjualan</h1>
+      <p class="page-sub">Ringkasan performa toko</p>
+    </div>
+    <div class="topbar-right">
+      <select id="filterPeriode" onchange="loadLaporan()" class="select-periode">
+        <option value="hari">Hari Ini</option>
+        <option value="minggu">7 Hari Terakhir</option>
+        <option value="bulan" selected>30 Hari Terakhir</option>
+        <option value="semua">Semua Waktu</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- STAT CARDS -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-info">
+        <div class="stat-label">Total Pendapatan</div>
+        <div class="stat-value" id="statPendapatan">Rp 0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🧾</div>
+      <div class="stat-info">
+        <div class="stat-label">Jumlah Transaksi</div>
+        <div class="stat-value" id="statTrx">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div class="stat-info">
+        <div class="stat-label">Item Terjual</div>
+        <div class="stat-value" id="statItem">0</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-info">
+        <div class="stat-label">Rata-rata Transaksi</div>
+        <div class="stat-value" id="statRata">Rp 0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="laporan-grid">
+    <!-- GRAFIK HARIAN -->
+    <div class="content-card">
+      <h3 class="card-title">📈 Penjualan Harian</h3>
+      <div class="chart-wrap" id="chartWrap">
+        <canvas id="chartHarian"></canvas>
+      </div>
+    </div>
+
+    <!-- PRODUK TERLARIS -->
+    <div class="content-card">
+      <h3 class="card-title">🏆 Produk Terlaris</h3>
+      <div id="produkTerlaris" class="terlaris-list"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const token = localStorage.getItem('token');
+  const user  = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) window.location.href = 'index.html';
+
+  document.getElementById('namaSidebar').textContent = user.nama || '-';
+  document.getElementById('avatarSidebar').textContent = (user.nama || 'K')[0].toUpperCase();
+
+  let chartInstance = null;
+
+  async function loadLaporan() {
+    const periode = document.getElementById('filterPeriode').value;
+    const res = await fetch(`/api/laporan?periode=${periode}`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+
+    // Stat cards
+    document.getElementById('statPendapatan').textContent = formatRupiah(data.totalPendapatan);
+    document.getElementById('statTrx').textContent        = data.jumlahTrx;
+    document.getElementById('statItem').textContent       = data.totalItem;
+    document.getElementById('statRata').textContent       = formatRupiah(data.rataRata);
+
+    // Grafik
+    renderChart(data.harian);
+
+    // Terlaris
+    renderTerlaris(data.terlaris);
+  }
+
+  function renderChart(harian) {
+    const canvas = document.getElementById('chartHarian');
+    const ctx = canvas.getContext('2d');
+
+    if (chartInstance) chartInstance = null;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (!harian || !harian.length) {
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '14px Plus Jakarta Sans';
+      ctx.textAlign = 'center';
+      ctx.fillText('Belum ada data', canvas.width/2, canvas.height/2);
+      return;
+    }
+
+    // Simple bar chart manual
+    const pad = { top: 20, right: 20, bottom: 50, left: 70 };
+    const W = canvas.width  = canvas.parentElement.clientWidth;
+    const H = canvas.height = 220;
+    const chartW = W - pad.left - pad.right;
+    const chartH = H - pad.top  - pad.bottom;
+
+    const maxVal = Math.max(...harian.map(d => d.total), 1);
+    const barW   = Math.min(chartW / harian.length - 8, 40);
+
+    // Grid lines
+    ctx.strokeStyle = '#e5e7eb';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = pad.top + chartH - (chartH * i / 4);
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '11px JetBrains Mono';
+      ctx.textAlign = 'right';
+      ctx.fillText(formatShort(maxVal * i / 4), pad.left - 8, y + 4);
+    }
+
+    // Bars
+    harian.forEach((d, i) => {
+      const x      = pad.left + (chartW / harian.length) * i + (chartW / harian.length - barW) / 2;
+      const barH   = (d.total / maxVal) * chartH;
+      const y      = pad.top + chartH - barH;
+
+      // Bar
+      const grad = ctx.createLinearGradient(0, y, 0, y + barH);
+      grad.addColorStop(0, '#3b82f6');
+      grad.addColorStop(1, '#1d4ed8');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(x, y, barW, barH, 4);
+      ctx.fill();
+
+      // Label tanggal
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '10px Plus Jakarta Sans';
+      ctx.textAlign = 'center';
+      const tgl = d.tanggal.slice(5); // MM-DD
+      ctx.fillText(tgl, x + barW/2, H - pad.bottom + 16);
+    });
+  }
+
+  function renderTerlaris(list) {
+    const el = document.getElementById('produkTerlaris');
+    if (!list || !list.length) {
+      el.innerHTML = '<p class="td-empty">Belum ada data</p>';
+      return;
+    }
+    const max = list[0].qty;
+    el.innerHTML = list.slice(0,8).map((p, i) => `
+      <div class="terlaris-item">
+        <div class="terlaris-rank">${i+1}</div>
+        <div class="terlaris-info">
+          <div class="terlaris-nama">${p.nama}</div>
+          <div class="terlaris-bar-wrap">
+            <div class="terlaris-bar" style="width:${(p.qty/max*100).toFixed(0)}%"></div>
+          </div>
+        </div>
+        <div class="terlaris-qty">${p.qty}x</div>
+        <div class="terlaris-total">${formatRupiah(p.total)}</div>
+      </div>
+    `).join('');
+  }
+
+  function formatRupiah(n) {
+    return 'Rp ' + Number(n||0).toLocaleString('id-ID');
+  }
+
+  function formatShort(n) {
+    if (n >= 1000000) return 'Rp '+(n/1000000).toFixed(1)+'jt';
+    if (n >= 1000)    return 'Rp '+(n/1000).toFixed(0)+'rb';
+    return 'Rp '+n;
+  }
+
+  function keluar() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+
+  loadLaporan();
+  window.addEventListener('resize', loadLaporan);
+</script>
+</body>
+</html>

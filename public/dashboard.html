@@ -3,134 +3,560 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard - Sistem Akun</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Dashboard - KasirKu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    .tab-menu { display: flex; gap: 8px; margin-bottom: 20px; }
-    .tab { flex: 1; padding: 10px; border: 2px solid var(--border); background: white; border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--abu); transition: all 0.2s; }
-    .tab.aktif { border-color: var(--biru); color: var(--biru); background: #eff6ff; }
-    .panel { display: none; }
-    .panel.aktif { display: block; }
-    .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --biru: #2563eb; --biru-tua: #1d4ed8; --biru-muda: #eff6ff;
+      --hijau: #16a34a; --merah: #dc2626; --kuning: #d97706;
+      --abu: #6b7280; --abu-muda: #f3f4f6; --border: #e5e7eb;
+      --putih: #ffffff; --hitam: #111827; --sidebar-w: 240px;
+    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; color: var(--hitam); display: flex; min-height: 100vh; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-w); background: #0f172a;
+      min-height: 100vh; position: fixed; top: 0; left: 0;
+      display: flex; flex-direction: column; z-index: 100;
+    }
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 12px;
+      padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .brand-icon {
+      font-size: 22px; background: linear-gradient(135deg, #2563eb, #7c3aed);
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .brand-name { font-size: 18px; font-weight: 800; color: white; letter-spacing: -0.3px; }
+    .brand-sub  { font-size: 11px; color: #475569; font-weight: 500; }
+
+    .sidebar-nav { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-section { font-size: 10px; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.08em; padding: 12px 10px 6px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 14px; border-radius: 12px;
+      color: #94a3b8; text-decoration: none;
+      font-size: 14px; font-weight: 500; transition: all 0.15s;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: white; }
+    .nav-item.aktif { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
+    .nav-icon { font-size: 17px; flex-shrink: 0; }
+
+    .sidebar-footer {
+      padding: 14px; border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .user-avatar {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 15px; color: white; flex-shrink: 0;
+    }
+    .user-info { flex: 1; min-width: 0; }
+    .user-nama { font-size: 13px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-email { font-size: 11px; color: #475569; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .btn-logout {
+      background: rgba(255,255,255,0.07); border: none; border-radius: 8px;
+      width: 34px; height: 34px; font-size: 15px; cursor: pointer;
+      flex-shrink: 0; transition: background 0.15s; color: #94a3b8;
+    }
+    .btn-logout:hover { background: #dc2626; color: white; }
+
+    /* MAIN */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
+
+    /* TOPBAR */
+    .topbar {
+      background: var(--putih); border-bottom: 1px solid var(--border);
+      padding: 0 32px; height: 72px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-left h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .topbar-left p  { font-size: 13px; color: var(--abu); margin-top: 2px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .topbar-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: all 0.15s;
+      border: none;
+    }
+    .btn-kasir { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; }
+    .btn-kasir:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,0.4); }
+
+    /* CONTENT */
+    .content { padding: 28px 32px; flex: 1; }
+
+    /* WELCOME BANNER */
+    .welcome-banner {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 50%, #7c3aed 100%);
+      border-radius: 20px; padding: 28px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 24px; overflow: hidden; position: relative;
+    }
+    .welcome-banner::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+    .welcome-banner::after {
+      content: '';
+      position: absolute; bottom: -60px; right: 100px;
+      width: 150px; height: 150px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 50%;
+    }
+    .welcome-text h2 { font-size: 24px; font-weight: 800; color: white; letter-spacing: -0.5px; }
+    .welcome-text p  { font-size: 14px; color: rgba(255,255,255,0.7); margin-top: 6px; }
+    .welcome-emoji { font-size: 56px; position: relative; z-index: 1; }
+
+    /* STAT CARDS */
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--putih); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px;
+      display: flex; flex-direction: column; gap: 12px;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; }
+    .stat-icon-wrap {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .ic-biru   { background: #eff6ff; }
+    .ic-hijau  { background: #f0fdf4; }
+    .ic-kuning { background: #fffbeb; }
+    .ic-ungu   { background: #f5f3ff; }
+
+    .stat-badge {
+      font-size: 11px; font-weight: 700; padding: 4px 10px;
+      border-radius: 20px;
+    }
+    .badge-up   { background: #f0fdf4; color: var(--hijau); }
+    .badge-info { background: #eff6ff; color: var(--biru); }
+
+    .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; font-family: 'JetBrains Mono', monospace; }
+    .stat-label { font-size: 13px; color: var(--abu); font-weight: 500; }
+
+    /* GRID 2 COL */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    .grid-3-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+    .card {
+      background: var(--putih); border: 1px solid var(--border);
+      border-radius: 16px; padding: 22px;
+    }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .card-title  { font-size: 15px; font-weight: 700; }
+    .card-sub    { font-size: 12px; color: var(--abu); margin-top: 2px; }
+    .card-link   { font-size: 13px; color: var(--biru); font-weight: 600; text-decoration: none; }
+    .card-link:hover { text-decoration: underline; }
+
+    /* PROFIL SECTION */
+    .profil-hero {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+      padding: 20px; background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+      border-radius: 14px;
+    }
+    .profil-avatar {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 800; color: white; flex-shrink: 0;
+    }
+    .profil-nama  { font-size: 18px; font-weight: 800; letter-spacing: -0.3px; }
+    .profil-email { font-size: 13px; color: var(--abu); margin-top: 2px; }
+    .profil-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: var(--hijau); background: #f0fdf4; border-radius: 6px; padding: 3px 10px; margin-top: 6px; }
+
+    .info-list { display: flex; flex-direction: column; gap: 10px; }
+    .info-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; background: var(--abu-muda); border-radius: 10px;
+    }
+    .info-key   { font-size: 12px; font-weight: 600; color: var(--abu); text-transform: uppercase; letter-spacing: 0.04em; }
+    .info-val   { font-size: 14px; font-weight: 600; }
+    .info-val.mono { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+
+    .profil-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .btn-action {
+      flex: 1; padding: 11px; border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.15s; text-align: center;
+    }
+    .btn-edit-profil  { background: var(--biru-muda); color: var(--biru-tua); }
+    .btn-edit-profil:hover { background: var(--biru); color: white; }
+    .btn-keluar-akun  { background: #fef2f2; color: var(--merah); }
+    .btn-keluar-akun:hover { background: var(--merah); color: white; }
+
+    /* QUICK LINKS */
+    .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .quick-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px; background: var(--abu-muda);
+      border-radius: 12px; text-decoration: none; color: var(--hitam);
+      font-size: 13px; font-weight: 600; transition: all 0.15s;
+    }
+    .quick-item:hover { background: var(--biru); color: white; transform: translateY(-1px); }
+    .quick-item:hover .quick-icon-wrap { background: rgba(255,255,255,0.2); }
+    .quick-icon-wrap {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: white; display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0; transition: background 0.15s;
+    }
+
+    /* AKTIVITAS */
+    .aktivitas-list { display: flex; flex-direction: column; gap: 0; }
+    .aktivitas-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .aktivitas-item:last-child { border-bottom: none; }
+    .akt-icon { font-size: 22px; flex-shrink: 0; }
+    .akt-info { flex: 1; min-width: 0; }
+    .akt-title { font-size: 13px; font-weight: 600; }
+    .akt-sub   { font-size: 12px; color: var(--abu); margin-top: 2px; }
+    .akt-val   { font-size: 13px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--biru); flex-shrink: 0; }
+    .empty-aktivitas { text-align: center; color: var(--abu); padding: 20px; font-size: 13px; }
+
+    /* MODAL EDIT PROFIL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; padding: 20px;
+    }
+    .modal-box {
+      background: white; border-radius: 20px; padding: 28px;
+      width: 100%; max-width: 440px;
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-head h2 { font-size: 18px; font-weight: 800; }
+    .modal-close { background: var(--abu-muda); border: none; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 14px; }
+    .modal-close:hover { background: #fee2e2; color: var(--merah); }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .form-group input {
+      width: 100%; padding: 12px 14px;
+      border: 2px solid var(--border); border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; outline: none;
+    }
+    .form-group input:focus { border-color: var(--biru); }
+    .modal-btns { display: flex; gap: 10px; margin-top: 4px; }
+    .btn-cancel { flex: 1; padding: 12px; background: var(--abu-muda); border: none; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-save   { flex: 2; padding: 12px; background: var(--biru); color: white; border: none; border-radius: 10px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .btn-save:hover { background: var(--biru-tua); }
+    .alert-err { background: #fef2f2; color: var(--merah); border-radius: 8px; padding: 10px 14px; font-size: 13px; font-weight: 500; margin-bottom: 12px; display: none; }
+    .alert-ok  { background: #f0fdf4; color: var(--hijau); border-radius: 8px; padding: 10px 14px; font-size: 13px; font-weight: 500; margin-bottom: 12px; display: none; }
   </style>
 </head>
 <body>
-<div class="kartu dashboard">
 
-  <!-- Header -->
-  <div class="logo">
-    <div class="logo-ikon">🏠</div>
-    <h1>Dashboard</h1>
-    <p id="sapaan">Selamat datang!</p>
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">🛒</div>
+    <div>
+      <div class="brand-name">KasirKu</div>
+      <div class="brand-sub">Point of Sale System</div>
+    </div>
   </div>
-
-  <!-- Pesan -->
-  <div class="alert alert-error"  id="pesanError"></div>
-  <div class="alert alert-sukses" id="pesanSukses"></div>
-
-  <!-- Tab Menu -->
-  <div class="tab-menu">
-    <button class="tab aktif" onclick="gantiTab('profil')">👤 Profil Saya</button>
-    <button class="tab" onclick="gantiTab('editProfil')">✏️ Edit Profil</button>
-    <button class="tab" onclick="gantiTab('gantiPassword')">🔒 Ganti Password</button>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Menu Utama</div>
+    <a href="dashboard.html" class="nav-item aktif">
+      <span class="nav-icon">🏠</span><span>Dashboard</span>
+    </a>
+    <a href="kasir.html" class="nav-item">
+      <span class="nav-icon">🧾</span><span>Kasir / Transaksi</span>
+    </a>
+    <div class="nav-section">Manajemen</div>
+    <a href="produk.html" class="nav-item">
+      <span class="nav-icon">📦</span><span>Produk</span>
+    </a>
+    <a href="riwayat.html" class="nav-item">
+      <span class="nav-icon">📋</span><span>Riwayat</span>
+    </a>
+    <a href="laporan.html" class="nav-item">
+      <span class="nav-icon">📊</span><span>Laporan</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-avatar" id="avatarSidebar">K</div>
+    <div class="user-info">
+      <div class="user-nama"  id="namaSidebar">-</div>
+      <div class="user-email" id="emailSidebar">-</div>
+    </div>
+    <button class="btn-logout" onclick="keluar()" title="Keluar">🚪</button>
   </div>
+</aside>
 
-  <!-- ===================== PANEL: PROFIL ===================== -->
-  <div class="panel aktif" id="panel-profil">
-    <div class="selamat-datang">
-      <h2 id="namaUser">Memuat...</h2>
-      <p>Akun aktif & terverifikasi 🎉</p>
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1>Dashboard</h1>
+      <p id="tanggalHari">Selamat datang!</p>
     </div>
-    <div class="info-card">
-      <h3>Email Akun</h3>
-      <p id="emailUser">-</p>
+    <div class="topbar-right">
+      <a href="kasir.html" class="topbar-btn btn-kasir">🧾 Buka Kasir</a>
     </div>
-    <div class="info-card">
-      <h3>ID Pengguna</h3>
-      <p id="idUser">-</p>
+  </header>
+
+  <div class="content">
+
+    <!-- WELCOME BANNER -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2 id="welcomeNama">Halo! 👋</h2>
+        <p id="welcomeSub">Semangat bekerja hari ini!</p>
+      </div>
+      <div class="welcome-emoji">🛒</div>
     </div>
-    <div class="info-card">
-      <h3>Status Akun</h3>
-      <p>✅ Aktif & Terverifikasi</p>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon-wrap ic-biru">💰</div>
+          <span class="stat-badge badge-up">Hari ini</span>
+        </div>
+        <div class="stat-value" id="statPendapatan">Rp 0</div>
+        <div class="stat-label">Pendapatan Hari Ini</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon-wrap ic-hijau">🧾</div>
+          <span class="stat-badge badge-up">Hari ini</span>
+        </div>
+        <div class="stat-value" id="statTrx">0</div>
+        <div class="stat-label">Transaksi Hari Ini</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon-wrap ic-kuning">📦</div>
+          <span class="stat-badge badge-info">Total</span>
+        </div>
+        <div class="stat-value" id="statProduk">0</div>
+        <div class="stat-label">Jumlah Produk</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon-wrap ic-ungu">📈</div>
+          <span class="stat-badge badge-info">Bulan ini</span>
+        </div>
+        <div class="stat-value" id="statBulan">Rp 0</div>
+        <div class="stat-label">Pendapatan Bulan Ini</div>
+      </div>
     </div>
-    <button class="btn btn-keluar" onclick="keluar()">🚪 Keluar dari Akun</button>
+
+    <!-- GRID BAWAH -->
+    <div class="grid-3-1">
+
+      <!-- KIRI: PROFIL + AKTIVITAS -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <!-- AKTIVITAS TERAKHIR -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📋 Transaksi Terakhir</div>
+              <div class="card-sub">5 transaksi terbaru</div>
+            </div>
+            <a href="riwayat.html" class="card-link">Lihat semua →</a>
+          </div>
+          <div class="aktivitas-list" id="aktivitasList">
+            <div class="empty-aktivitas">Belum ada transaksi</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- KANAN: PROFIL -->
+      <div style="display:flex;flex-direction:column;gap:20px;">
+
+        <!-- PROFIL CARD -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">👤 Profil Saya</div>
+          </div>
+          <div class="profil-hero">
+            <div class="profil-avatar" id="profilAvatar">K</div>
+            <div>
+              <div class="profil-nama"  id="profilNama">-</div>
+              <div class="profil-email" id="profilEmail">-</div>
+              <div class="profil-badge">✅ Akun Aktif</div>
+            </div>
+          </div>
+          <div class="info-list">
+            <div class="info-row">
+              <span class="info-key">ID Pengguna</span>
+              <span class="info-val mono" id="profilId">-</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Role</span>
+              <span class="info-val">Kasir</span>
+            </div>
+          </div>
+          <div class="profil-actions">
+            <button class="btn-action btn-edit-profil" onclick="bukaEditProfil()">✏️ Edit</button>
+            <button class="btn-action btn-keluar-akun" onclick="keluar()">🚪 Keluar</button>
+          </div>
+        </div>
+
+        <!-- QUICK LINKS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">⚡ Akses Cepat</div>
+          </div>
+          <div class="quick-grid">
+            <a href="kasir.html" class="quick-item">
+              <div class="quick-icon-wrap">🧾</div>Kasir
+            </a>
+            <a href="produk.html" class="quick-item">
+              <div class="quick-icon-wrap">📦</div>Produk
+            </a>
+            <a href="riwayat.html" class="quick-item">
+              <div class="quick-icon-wrap">📋</div>Riwayat
+            </a>
+            <a href="laporan.html" class="quick-item">
+              <div class="quick-icon-wrap">📊</div>Laporan
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
   </div>
+</main>
 
-  <!-- ===================== PANEL: EDIT PROFIL ===================== -->
-  <div class="panel" id="panel-editProfil">
+<!-- MODAL EDIT PROFIL -->
+<div class="modal-overlay" id="modalEdit" style="display:none">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Edit Profil</h2>
+      <button class="modal-close" onclick="tutupModal()">✕</button>
+    </div>
+    <div class="alert-err" id="editError"></div>
+    <div class="alert-ok"  id="editSukses"></div>
     <div class="form-group">
-      <label for="editNama">Nama Lengkap</label>
-      <input type="text" id="editNama" placeholder="Nama baru kamu" />
+      <label>Nama Lengkap</label>
+      <input type="text" id="editNama" placeholder="Nama lengkap" />
     </div>
     <div class="form-group">
-      <label for="editEmail">Alamat Email</label>
-      <input type="email" id="editEmail" placeholder="Email baru kamu" />
+      <label>Email</label>
+      <input type="email" id="editEmail" placeholder="Email" />
     </div>
-    <button class="btn btn-utama" id="btnSimpanProfil" onclick="simpanProfil()">
-      Simpan Perubahan
-    </button>
-    <button class="btn btn-keluar" onclick="gantiTab('profil')">Batal</button>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="tutupModal()">Batal</button>
+      <button class="btn-save" onclick="simpanProfil()">💾 Simpan</button>
+    </div>
   </div>
-
-  <!-- ===================== PANEL: GANTI PASSWORD ===================== -->
-  <div class="panel" id="panel-gantiPassword">
-    <div class="form-group">
-      <label for="passwordLama">Password Lama</label>
-      <input type="password" id="passwordLama" placeholder="Masukkan password lama" />
-    </div>
-    <div class="form-group">
-      <label for="passwordBaru">Password Baru</label>
-      <input type="password" id="passwordBaru" placeholder="Minimal 6 karakter" />
-    </div>
-    <div class="form-group">
-      <label for="konfirmasiPassword">Konfirmasi Password Baru</label>
-      <input type="password" id="konfirmasiPassword" placeholder="Ulangi password baru" />
-    </div>
-    <button class="btn btn-utama" id="btnGantiPassword" onclick="gantiPassword()">
-      Ganti Password
-    </button>
-    <button class="btn btn-keluar" onclick="gantiTab('profil')">Batal</button>
-  </div>
-
 </div>
 
 <script>
   const token = localStorage.getItem('token');
+  let user = JSON.parse(localStorage.getItem('user') || '{}');
   if (!token) window.location.href = 'index.html';
 
-  let user = JSON.parse(localStorage.getItem('user') || '{}');
-
   // Tampilkan data user
-  function tampilkanUser() {
-    document.getElementById('namaUser').textContent  = 'Halo, ' + user.nama + '!';
-    document.getElementById('sapaan').textContent    = 'Selamat datang kembali 👋';
-    document.getElementById('emailUser').textContent = user.email;
-    document.getElementById('idUser').textContent    = '#' + user.id;
-    document.getElementById('editNama').value        = user.nama;
-    document.getElementById('editEmail').value       = user.email;
+  function tampilUser() {
+    const nama  = user.nama  || '-';
+    const email = user.email || '-';
+    document.getElementById('namaSidebar').textContent  = nama;
+    document.getElementById('emailSidebar').textContent = email;
+    document.getElementById('avatarSidebar').textContent = nama[0].toUpperCase();
+    document.getElementById('profilNama').textContent   = nama;
+    document.getElementById('profilEmail').textContent  = email;
+    document.getElementById('profilId').textContent     = '#' + user.id;
+    document.getElementById('profilAvatar').textContent = nama[0].toUpperCase();
+    document.getElementById('welcomeNama').textContent  = 'Halo, ' + nama.split(' ')[0] + '! 👋';
   }
-  tampilkanUser();
+  tampilUser();
 
-  // Ganti tab
-  function gantiTab(nama) {
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('aktif'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('aktif'));
-    document.getElementById('panel-' + nama).classList.add('aktif');
-    event.target.classList.add('aktif');
-    sembunyikanPesan();
+  // Tanggal
+  const now = new Date();
+  document.getElementById('tanggalHari').textContent = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  // Salam berdasarkan jam
+  const jam = now.getHours();
+  const salam = jam < 11 ? 'Selamat pagi' : jam < 15 ? 'Selamat siang' : jam < 18 ? 'Selamat sore' : 'Selamat malam';
+  document.getElementById('welcomeSub').textContent = salam + '! Semangat bekerja hari ini 💪';
+
+  // Load semua data
+  async function loadData() {
+    try {
+      // Laporan hari ini
+      const resHari = await fetch('/api/laporan?periode=hari', { headers: { 'Authorization': 'Bearer ' + token } });
+      const dataHari = await resHari.json();
+      document.getElementById('statPendapatan').textContent = formatRupiah(dataHari.totalPendapatan);
+      document.getElementById('statTrx').textContent        = dataHari.jumlahTrx;
+
+      // Laporan bulan ini
+      const resBulan = await fetch('/api/laporan?periode=bulan', { headers: { 'Authorization': 'Bearer ' + token } });
+      const dataBulan = await resBulan.json();
+      document.getElementById('statBulan').textContent = formatRupiah(dataBulan.totalPendapatan);
+
+      // Produk
+      const resProduk = await fetch('/api/produk', { headers: { 'Authorization': 'Bearer ' + token } });
+      const produk = await resProduk.json();
+      document.getElementById('statProduk').textContent = produk.length;
+
+      // Riwayat transaksi
+      const resTrx = await fetch('/api/transaksi', { headers: { 'Authorization': 'Bearer ' + token } });
+      const trxList = await resTrx.json();
+      const last5 = [...trxList].reverse().slice(0, 5);
+
+      const el = document.getElementById('aktivitasList');
+      if (!last5.length) {
+        el.innerHTML = '<div class="empty-aktivitas">Belum ada transaksi. <a href="kasir.html" style="color:var(--biru)">Mulai transaksi</a></div>';
+      } else {
+        el.innerHTML = last5.map(t => `
+          <div class="aktivitas-item">
+            <div class="akt-icon">🧾</div>
+            <div class="akt-info">
+              <div class="akt-title">${t.noTransaksi}</div>
+              <div class="akt-sub">${new Date(t.waktu).toLocaleString('id-ID')} · ${t.kasir} · ${t.items.length} item</div>
+            </div>
+            <div class="akt-val">${formatRupiah(t.total)}</div>
+          </div>
+        `).join('');
+      }
+
+    } catch(e) {
+      console.error(e);
+    }
   }
 
-  // Edit Profil
+  // Edit profil
+  function bukaEditProfil() {
+    document.getElementById('editNama').value  = user.nama;
+    document.getElementById('editEmail').value = user.email;
+    document.getElementById('editError').style.display  = 'none';
+    document.getElementById('editSukses').style.display = 'none';
+    document.getElementById('modalEdit').style.display  = 'flex';
+  }
+  function tutupModal() { document.getElementById('modalEdit').style.display = 'none'; }
+
   async function simpanProfil() {
     const nama  = document.getElementById('editNama').value.trim();
     const email = document.getElementById('editEmail').value.trim();
-    const btn   = document.getElementById('btnSimpanProfil');
+    const errEl = document.getElementById('editError');
+    const okEl  = document.getElementById('editSukses');
+    errEl.style.display = 'none'; okEl.style.display = 'none';
 
-    sembunyikanPesan();
-    if (!nama || !email) return tampilError('Nama dan email wajib diisi!');
-
-    btn.disabled = true;
-    btn.innerHTML = '<span class="loading">Menyimpan</span>';
+    if (!nama || !email) { errEl.textContent = '❌ Nama dan email wajib diisi!'; errEl.style.display = 'block'; return; }
 
     try {
       const res = await fetch('/api/edit-profil', {
@@ -139,88 +565,30 @@
         body: JSON.stringify({ nama, email })
       });
       const hasil = await res.json();
-
-      if (!res.ok) {
-        tampilError(hasil.error);
-      } else {
-        // Update data lokal dengan token & user baru
-        localStorage.setItem('token', hasil.token);
-        localStorage.setItem('user', JSON.stringify(hasil.user));
-        user = hasil.user;
-        tampilkanUser();
-        tampilSukses('Profil berhasil diupdate! ✅');
-        setTimeout(() => gantiTab('profil'), 1500);
-      }
+      if (!res.ok) { errEl.textContent = '❌ ' + hasil.error; errEl.style.display = 'block'; return; }
+      localStorage.setItem('token', hasil.token);
+      localStorage.setItem('user', JSON.stringify(hasil.user));
+      user = hasil.user;
+      tampilUser();
+      okEl.textContent = '✅ Profil berhasil diupdate!'; okEl.style.display = 'block';
+      setTimeout(tutupModal, 1500);
     } catch {
-      tampilError('Tidak bisa terhubung ke server!');
+      errEl.textContent = '❌ Tidak bisa terhubung ke server!'; errEl.style.display = 'block';
     }
-
-    btn.disabled = false;
-    btn.innerHTML = 'Simpan Perubahan';
-  }
-
-  // Ganti Password
-  async function gantiPassword() {
-    const passwordLama       = document.getElementById('passwordLama').value;
-    const passwordBaru       = document.getElementById('passwordBaru').value;
-    const konfirmasiPassword = document.getElementById('konfirmasiPassword').value;
-    const btn                = document.getElementById('btnGantiPassword');
-
-    sembunyikanPesan();
-    if (!passwordLama || !passwordBaru || !konfirmasiPassword)
-      return tampilError('Semua kolom wajib diisi!');
-    if (passwordBaru.length < 6)
-      return tampilError('Password baru minimal 6 karakter!');
-    if (passwordBaru !== konfirmasiPassword)
-      return tampilError('Password baru dan konfirmasi tidak sama!');
-
-    btn.disabled = true;
-    btn.innerHTML = '<span class="loading">Memproses</span>';
-
-    try {
-      const res = await fetch('/api/ganti-password', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ passwordLama, passwordBaru })
-      });
-      const hasil = await res.json();
-
-      if (!res.ok) {
-        tampilError(hasil.error);
-      } else {
-        tampilSukses('Password berhasil diganti! Silakan login ulang...');
-        setTimeout(() => keluar(), 2000);
-      }
-    } catch {
-      tampilError('Tidak bisa terhubung ke server!');
-    }
-
-    btn.disabled = false;
-    btn.innerHTML = 'Ganti Password';
   }
 
   function keluar() {
+    if (!confirm('Yakin ingin keluar?')) return;
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = 'index.html';
   }
 
-  function tampilError(pesan) {
-    const el = document.getElementById('pesanError');
-    el.textContent = '❌ ' + pesan;
-    el.classList.add('tampil');
+  function formatRupiah(n) {
+    return 'Rp ' + Number(n||0).toLocaleString('id-ID');
   }
 
-  function tampilSukses(pesan) {
-    const el = document.getElementById('pesanSukses');
-    el.textContent = '✅ ' + pesan;
-    el.classList.add('tampil');
-  }
-
-  function sembunyikanPesan() {
-    document.getElementById('pesanError').classList.remove('tampil');
-    document.getElementById('pesanSukses').classList.remove('tampil');
-  }
+  loadData();
 </script>
 </body>
 </html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Riwayat - KasirKu</title>
+  <link rel="stylesheet" href="kasir-style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">🛒</div>
+    <span class="brand-name">KasirKu</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="kasir.html" class="nav-item"><span class="nav-icon">🧾</span><span>Kasir</span></a>
+    <a href="produk.html" class="nav-item"><span class="nav-icon">📦</span><span>Produk</span></a>
+    <a href="riwayat.html" class="nav-item aktif"><span class="nav-icon">📋</span><span>Riwayat</span></a>
+    <a href="laporan.html" class="nav-item"><span class="nav-icon">📊</span><span>Laporan</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="avatarSidebar">K</div>
+      <div>
+        <div class="user-nama" id="namaSidebar">-</div>
+        <div class="user-role">Kasir</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="keluar()">🚪</button>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1 class="page-title">Riwayat Transaksi</h1>
+      <p class="page-sub">Semua transaksi yang sudah dilakukan</p>
+    </div>
+  </header>
+
+  <div class="content-card">
+    <div class="table-toolbar">
+      <input type="text" id="cariTrx" placeholder="🔍 Cari no. transaksi..." oninput="filterTrx()" class="input-cari" />
+      <input type="date" id="filterTanggal" onchange="filterTrx()" class="input-tanggal" />
+      <span id="jumlahTrx" class="badge-count">0 transaksi</span>
+    </div>
+    <div class="table-wrap">
+      <table class="tabel">
+        <thead>
+          <tr>
+            <th>No. Transaksi</th>
+            <th>Waktu</th>
+            <th>Kasir</th>
+            <th>Items</th>
+            <th>Total</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tabelTrx">
+          <tr><td colspan="6" class="td-loading">Memuat...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL DETAIL -->
+<div class="modal-overlay" id="modalDetail" style="display:none">
+  <div class="modal-form">
+    <div class="modal-header">
+      <h2>Detail Transaksi</h2>
+      <button class="modal-close" onclick="document.getElementById('modalDetail').style.display='none'">✕</button>
+    </div>
+    <div id="detailIsi"></div>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  const user  = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) window.location.href = 'index.html';
+
+  document.getElementById('namaSidebar').textContent = user.nama || '-';
+  document.getElementById('avatarSidebar').textContent = (user.nama || 'K')[0].toUpperCase();
+
+  let semuaTrx = [];
+
+  async function loadTrx() {
+    const res = await fetch('/api/transaksi', { headers: { 'Authorization': 'Bearer ' + token } });
+    semuaTrx = await res.json();
+    semuaTrx.reverse(); // Terbaru dulu
+    renderTabel(semuaTrx);
+  }
+
+  function renderTabel(list) {
+    document.getElementById('jumlahTrx').textContent = `${list.length} transaksi`;
+    const tbody = document.getElementById('tabelTrx');
+    if (!list.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="td-empty">Belum ada transaksi</td></tr>';
+      return;
+    }
+    tbody.innerHTML = list.map(t => `
+      <tr>
+        <td class="td-mono">${t.noTransaksi}</td>
+        <td>${new Date(t.waktu).toLocaleString('id-ID')}</td>
+        <td>${t.kasir}</td>
+        <td>${t.items.length} item</td>
+        <td class="td-mono td-total">${formatRupiah(t.total)}</td>
+        <td><button class="btn-edit" onclick="lihatDetail(${t.id})">👁️ Detail</button></td>
+      </tr>
+    `).join('');
+  }
+
+  function filterTrx() {
+    const q   = document.getElementById('cariTrx').value.toLowerCase();
+    const tgl = document.getElementById('filterTanggal').value;
+    let hasil = semuaTrx;
+    if (q) hasil = hasil.filter(t => t.noTransaksi.toLowerCase().includes(q) || t.kasir.toLowerCase().includes(q));
+    if (tgl) hasil = hasil.filter(t => t.waktu.slice(0,10) === tgl);
+    renderTabel(hasil);
+  }
+
+  function lihatDetail(id) {
+    const t = semuaTrx.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('detailIsi').innerHTML = `
+      <div class="detail-header">
+        <div><strong>${t.noTransaksi}</strong></div>
+        <div>${new Date(t.waktu).toLocaleString('id-ID')}</div>
+        <div>Kasir: ${t.kasir}</div>
+      </div>
+      <table class="tabel" style="margin-top:16px">
+        <thead><tr><th>Produk</th><th>Harga</th><th>Qty</th><th>Subtotal</th></tr></thead>
+        <tbody>
+          ${t.items.map(i => `<tr>
+            <td>${i.nama}</td>
+            <td class="td-mono">${formatRupiah(i.harga)}</td>
+            <td>${i.qty}</td>
+            <td class="td-mono">${formatRupiah(i.harga*i.qty)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="detail-summary">
+        <div class="summary-row"><span>Subtotal</span><span>${formatRupiah(t.subtotal)}</span></div>
+        ${t.diskon>0?`<div class="summary-row"><span>Diskon</span><span>-${formatRupiah(t.diskon)}</span></div>`:''}
+        <div class="summary-row total-row"><span>TOTAL</span><span>${formatRupiah(t.total)}</span></div>
+        <div class="summary-row"><span>Bayar</span><span>${formatRupiah(t.bayar)}</span></div>
+        <div class="summary-row"><span>Kembalian</span><span>${formatRupiah(t.kembalian)}</span></div>
+      </div>
+    `;
+    document.getElementById('modalDetail').style.display = 'flex';
+  }
+
+  function keluar() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+
+  function formatRupiah(n) {
+    return 'Rp ' + Number(n).toLocaleString('id-ID');
+  }
+
+  loadTrx();
+</script>
+</body>
+</html>
