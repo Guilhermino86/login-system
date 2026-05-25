@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Sistem Akun</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .tab-menu { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tab { flex: 1; padding: 10px; border: 2px solid var(--border); background: white; border-radius: 10px; font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--abu); transition: all 0.2s; }
+    .tab.aktif { border-color: var(--biru); color: var(--biru); background: #eff6ff; }
+    .panel { display: none; }
+    .panel.aktif { display: block; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  </style>
+</head>
+<body>
+<div class="kartu dashboard">
+
+  <!-- Header -->
+  <div class="logo">
+    <div class="logo-ikon">🏠</div>
+    <h1>Dashboard</h1>
+    <p id="sapaan">Selamat datang!</p>
+  </div>
+
+  <!-- Pesan -->
+  <div class="alert alert-error"  id="pesanError"></div>
+  <div class="alert alert-sukses" id="pesanSukses"></div>
+
+  <!-- Tab Menu -->
+  <div class="tab-menu">
+    <button class="tab aktif" onclick="gantiTab('profil')">👤 Profil Saya</button>
+    <button class="tab" onclick="gantiTab('editProfil')">✏️ Edit Profil</button>
+    <button class="tab" onclick="gantiTab('gantiPassword')">🔒 Ganti Password</button>
+  </div>
+
+  <!-- ===================== PANEL: PROFIL ===================== -->
+  <div class="panel aktif" id="panel-profil">
+    <div class="selamat-datang">
+      <h2 id="namaUser">Memuat...</h2>
+      <p>Akun aktif & terverifikasi 🎉</p>
+    </div>
+    <div class="info-card">
+      <h3>Email Akun</h3>
+      <p id="emailUser">-</p>
+    </div>
+    <div class="info-card">
+      <h3>ID Pengguna</h3>
+      <p id="idUser">-</p>
+    </div>
+    <div class="info-card">
+      <h3>Status Akun</h3>
+      <p>✅ Aktif & Terverifikasi</p>
+    </div>
+    <button class="btn btn-keluar" onclick="keluar()">🚪 Keluar dari Akun</button>
+  </div>
+
+  <!-- ===================== PANEL: EDIT PROFIL ===================== -->
+  <div class="panel" id="panel-editProfil">
+    <div class="form-group">
+      <label for="editNama">Nama Lengkap</label>
+      <input type="text" id="editNama" placeholder="Nama baru kamu" />
+    </div>
+    <div class="form-group">
+      <label for="editEmail">Alamat Email</label>
+      <input type="email" id="editEmail" placeholder="Email baru kamu" />
+    </div>
+    <button class="btn btn-utama" id="btnSimpanProfil" onclick="simpanProfil()">
+      Simpan Perubahan
+    </button>
+    <button class="btn btn-keluar" onclick="gantiTab('profil')">Batal</button>
+  </div>
+
+  <!-- ===================== PANEL: GANTI PASSWORD ===================== -->
+  <div class="panel" id="panel-gantiPassword">
+    <div class="form-group">
+      <label for="passwordLama">Password Lama</label>
+      <input type="password" id="passwordLama" placeholder="Masukkan password lama" />
+    </div>
+    <div class="form-group">
+      <label for="passwordBaru">Password Baru</label>
+      <input type="password" id="passwordBaru" placeholder="Minimal 6 karakter" />
+    </div>
+    <div class="form-group">
+      <label for="konfirmasiPassword">Konfirmasi Password Baru</label>
+      <input type="password" id="konfirmasiPassword" placeholder="Ulangi password baru" />
+    </div>
+    <button class="btn btn-utama" id="btnGantiPassword" onclick="gantiPassword()">
+      Ganti Password
+    </button>
+    <button class="btn btn-keluar" onclick="gantiTab('profil')">Batal</button>
+  </div>
+
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) window.location.href = 'index.html';
+
+  let user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Tampilkan data user
+  function tampilkanUser() {
+    document.getElementById('namaUser').textContent  = 'Halo, ' + user.nama + '!';
+    document.getElementById('sapaan').textContent    = 'Selamat datang kembali 👋';
+    document.getElementById('emailUser').textContent = user.email;
+    document.getElementById('idUser').textContent    = '#' + user.id;
+    document.getElementById('editNama').value        = user.nama;
+    document.getElementById('editEmail').value       = user.email;
+  }
+  tampilkanUser();
+
+  // Ganti tab
+  function gantiTab(nama) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('aktif'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('aktif'));
+    document.getElementById('panel-' + nama).classList.add('aktif');
+    event.target.classList.add('aktif');
+    sembunyikanPesan();
+  }
+
+  // Edit Profil
+  async function simpanProfil() {
+    const nama  = document.getElementById('editNama').value.trim();
+    const email = document.getElementById('editEmail').value.trim();
+    const btn   = document.getElementById('btnSimpanProfil');
+
+    sembunyikanPesan();
+    if (!nama || !email) return tampilError('Nama dan email wajib diisi!');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading">Menyimpan</span>';
+
+    try {
+      const res = await fetch('/api/edit-profil', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ nama, email })
+      });
+      const hasil = await res.json();
+
+      if (!res.ok) {
+        tampilError(hasil.error);
+      } else {
+        // Update data lokal dengan token & user baru
+        localStorage.setItem('token', hasil.token);
+        localStorage.setItem('user', JSON.stringify(hasil.user));
+        user = hasil.user;
+        tampilkanUser();
+        tampilSukses('Profil berhasil diupdate! ✅');
+        setTimeout(() => gantiTab('profil'), 1500);
+      }
+    } catch {
+      tampilError('Tidak bisa terhubung ke server!');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Simpan Perubahan';
+  }
+
+  // Ganti Password
+  async function gantiPassword() {
+    const passwordLama       = document.getElementById('passwordLama').value;
+    const passwordBaru       = document.getElementById('passwordBaru').value;
+    const konfirmasiPassword = document.getElementById('konfirmasiPassword').value;
+    const btn                = document.getElementById('btnGantiPassword');
+
+    sembunyikanPesan();
+    if (!passwordLama || !passwordBaru || !konfirmasiPassword)
+      return tampilError('Semua kolom wajib diisi!');
+    if (passwordBaru.length < 6)
+      return tampilError('Password baru minimal 6 karakter!');
+    if (passwordBaru !== konfirmasiPassword)
+      return tampilError('Password baru dan konfirmasi tidak sama!');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading">Memproses</span>';
+
+    try {
+      const res = await fetch('/api/ganti-password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ passwordLama, passwordBaru })
+      });
+      const hasil = await res.json();
+
+      if (!res.ok) {
+        tampilError(hasil.error);
+      } else {
+        tampilSukses('Password berhasil diganti! Silakan login ulang...');
+        setTimeout(() => keluar(), 2000);
+      }
+    } catch {
+      tampilError('Tidak bisa terhubung ke server!');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Ganti Password';
+  }
+
+  function keluar() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+
+  function tampilError(pesan) {
+    const el = document.getElementById('pesanError');
+    el.textContent = '❌ ' + pesan;
+    el.classList.add('tampil');
+  }
+
+  function tampilSukses(pesan) {
+    const el = document.getElementById('pesanSukses');
+    el.textContent = '✅ ' + pesan;
+    el.classList.add('tampil');
+  }
+
+  function sembunyikanPesan() {
+    document.getElementById('pesanError').classList.remove('tampil');
+    document.getElementById('pesanSukses').classList.remove('tampil');
+  }
+</script>
+</body>
+</html>
