@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Sistem Akun</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="kartu">
+
+    <!-- Header -->
+    <div class="logo">
+      <div class="logo-ikon">🔐</div>
+      <h1>Masuk ke Akun</h1>
+      <p>Selamat datang kembali!</p>
+    </div>
+
+    <!-- Pesan Error / Sukses -->
+    <div class="alert alert-error"  id="pesanError"></div>
+    <div class="alert alert-sukses" id="pesanSukses"></div>
+
+    <!-- Form Login -->
+    <div class="form-group">
+      <label for="email">Alamat Email</label>
+      <input type="email" id="email" placeholder="contoh@email.com" />
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Masukkan password" />
+    </div>
+
+    <button class="btn btn-utama" id="btnLogin" onclick="login()">
+      Masuk
+    </button>
+
+    <div class="link-bawah">
+      Belum punya akun? <a href="register.html">Daftar sekarang</a>
+    </div>
+
+  </div>
+
+  <script>
+    // Kalau sudah login, langsung ke dashboard
+    if (localStorage.getItem('token')) {
+      window.location.href = 'dashboard.html';
+    }
+
+    // Fungsi Login
+    async function login() {
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const btn      = document.getElementById('btnLogin');
+
+      // Sembunyikan pesan lama
+      sembunyikanPesan();
+
+      // Validasi sederhana di frontend
+      if (!email || !password) {
+        tampilError('Email dan password wajib diisi!');
+        return;
+      }
+
+      // Tampilkan loading di tombol
+      btn.disabled = true;
+      btn.innerHTML = '<span class="loading">Memproses</span>';
+
+      try {
+        // Kirim data ke backend
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const hasil = await response.json();
+
+        if (!response.ok) {
+          // Ada error dari server
+          tampilError(hasil.error);
+        } else {
+          // Login berhasil! Simpan token
+          localStorage.setItem('token', hasil.token);
+          localStorage.setItem('user',  JSON.stringify(hasil.user));
+
+          tampilSukses('Login berhasil! Mengarahkan ke dashboard...');
+
+          // Pindah ke dashboard setelah 1 detik
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 1000);
+        }
+
+      } catch (err) {
+        tampilError('Tidak bisa terhubung ke server. Pastikan server berjalan!');
+      }
+
+      // Kembalikan tombol
+      btn.disabled = false;
+      btn.innerHTML = 'Masuk';
+    }
+
+    // Helper functions
+    function tampilError(pesan) {
+      const el = document.getElementById('pesanError');
+      el.textContent = '❌ ' + pesan;
+      el.classList.add('tampil');
+    }
+
+    function tampilSukses(pesan) {
+      const el = document.getElementById('pesanSukses');
+      el.textContent = '✅ ' + pesan;
+      el.classList.add('tampil');
+    }
+
+    function sembunyikanPesan() {
+      document.getElementById('pesanError').classList.remove('tampil');
+      document.getElementById('pesanSukses').classList.remove('tampil');
+    }
+
+    // Tekan Enter untuk login
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') login();
+    });
+  </script>
+
+</body>
+</html>
