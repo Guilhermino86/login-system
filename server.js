@@ -25,13 +25,12 @@ await db.read();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.resolve('public')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.resolve('public', 'index.html'));
 });
-
-// baru routes API di bawah...
 
 console.log('✅ Database siap!');
 
@@ -102,21 +101,17 @@ app.put('/api/edit-profil', async (req, res) => {
   if (!nama || !email)
     return res.status(400).json({ error: 'Nama dan email wajib diisi!' });
 
-  // Cari user di database
   const index = db.data.users.findIndex(u => u.id === sesi.id);
   if (index === -1) return res.status(404).json({ error: 'Akun tidak ditemukan!' });
 
-  // Cek kalau email baru sudah dipakai user lain
   const emailDipakai = db.data.users.find(u => u.email === email && u.id !== sesi.id);
   if (emailDipakai)
     return res.status(409).json({ error: 'Email sudah dipakai akun lain!' });
 
-  // Update data
   db.data.users[index].nama  = nama;
   db.data.users[index].email = email;
   await db.write();
 
-  // Buat token baru dengan data yang sudah diupdate
   const tokenBaru = jwt.sign(
     { id: sesi.id, nama, email },
     SECRET,
@@ -144,12 +139,10 @@ app.put('/api/ganti-password', async (req, res) => {
   const index = db.data.users.findIndex(u => u.id === sesi.id);
   if (index === -1) return res.status(404).json({ error: 'Akun tidak ditemukan!' });
 
-  // Cek password lama
   const cocok = await bcrypt.compare(passwordLama, db.data.users[index].password);
   if (!cocok)
     return res.status(401).json({ error: 'Password lama salah!' });
 
-  // Simpan password baru
   db.data.users[index].password = await bcrypt.hash(passwordBaru, 10);
   await db.write();
 
