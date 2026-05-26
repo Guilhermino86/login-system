@@ -332,7 +332,7 @@
           <div class="stat-icon-wrap ic-biru">💰</div>
           <span class="stat-badge badge-up">Hari ini</span>
         </div>
-        <div class="stat-value" id="statPendapatan">Rp 0</div>
+        <div class="stat-value" id="statPendapatan">$ 0</div>
         <div class="stat-label">Pendapatan Hari Ini</div>
       </div>
       <div class="stat-card">
@@ -356,7 +356,7 @@
           <div class="stat-icon-wrap ic-ungu">📈</div>
           <span class="stat-badge badge-info">Bulan ini</span>
         </div>
-        <div class="stat-value" id="statBulan">Rp 0</div>
+        <div class="stat-value" id="statBulan">$ 0</div>
         <div class="stat-label">Pendapatan Bulan Ini</div>
       </div>
     </div>
@@ -585,7 +585,7 @@
   }
 
   function formatRupiah(n) {
-    return 'Rp ' + Number(n||0).toLocaleString('id-ID');
+    return '$ ' + Number(n||0).toLocaleString('en-US');
   }
 
   loadData();

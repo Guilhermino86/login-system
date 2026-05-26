@@ -91,30 +91,30 @@
       <div class="keranjang-summary">
         <div class="summary-row">
           <span>Subtotal</span>
-          <span id="subtotal">Rp 0</span>
+          <span id="subtotal">$ 0</span>
         </div>
         <div class="summary-row diskon-row">
           <span>Diskon</span>
           <div class="diskon-input-wrap">
-            <span>Rp</span>
+            <span>$</span>
             <input type="number" id="diskon" value="0" min="0" oninput="hitungTotal()" />
           </div>
         </div>
         <div class="summary-row total-row">
           <span>TOTAL</span>
-          <span id="total" class="total-angka">Rp 0</span>
+          <span id="total" class="total-angka">$ 0</span>
         </div>
       </div>
 
       <div class="bayar-section">
         <label class="bayar-label">Uang Diterima</label>
         <div class="bayar-input-wrap">
-          <span class="bayar-prefix">Rp</span>
+          <span class="bayar-prefix">$/span>
           <input type="number" id="uangDiterima" placeholder="0" oninput="hitungKembalian()" />
         </div>
         <div class="kembalian-box" id="kembalianBox" style="display:none">
           <span>Kembalian</span>
-          <strong id="kembalian">Rp 0</strong>
+          <strong id="kembalian">$ 0</strong>
         </div>
       </div>
 
@@ -384,7 +384,7 @@
   }
 
   function formatRupiah(n) {
-    return 'Rp ' + Number(n).toLocaleString('id-ID');
+    return '$ ' + Number(n||0).toLocaleString('en-US');
   }
 
   loadProduk();

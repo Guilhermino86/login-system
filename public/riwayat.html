@@ -160,7 +160,7 @@
   }
 
   function formatRupiah(n) {
-    return 'Rp ' + Number(n).toLocaleString('id-ID');
+    return '$ ' + Number(n||0).toLocaleString('en-US');
   }
 
   loadTrx();
