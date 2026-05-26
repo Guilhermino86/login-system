@@ -140,7 +140,7 @@
       <tr>
         <td><span class="td-emoji">${p.emoji||'📦'}</span> ${p.nama}</td>
         <td><span class="badge-kategori">${p.kategori||'-'}</span></td>
-        <td class="td-mono">${formatRupiah(p.harga)}</td>
+        <td class="td-mono">${formatUSD(p.harga)}</td>
         <td><span class="badge-stok ${p.stok===0?'stok-habis':p.stok<=5?'stok-rendah':'stok-aman'}">${p.stok}</span></td>
         <td class="td-aksi">
           <button class="btn-edit" onclick="editProduk(${p.id})">✏️ Edit</button>
@@ -248,7 +248,7 @@
     window.location.href = 'index.html';
   }
 
-  function formatRupiah(n) {
+  function formatUSD(n) {
     return '$ ' + Number(n||0).toLocaleString('en-US');
   }
 
