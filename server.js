@@ -18,6 +18,9 @@ const app    = express();
 const PORT   = process.env.PORT || 3000;
 const SECRET = process.env.JWT_SECRET || 'rahasia_jwt_kamu_123';
 
+// Email admin tetap
+const ADMIN_EMAIL = 'deusguilherminode@gmail.com';
+
 const adapter = new JSONFile(path.join('/tmp', 'db.json'));
 const defaultData = { users: [], produk: [], transaksi: [] };
 const db = new Low(adapter, defaultData);
@@ -51,6 +54,16 @@ function cekToken(req, res) {
   }
 }
 
+function cekAdmin(req, res) {
+  const sesi = cekToken(req, res);
+  if (!sesi) return null;
+  if (sesi.role !== 'admin') {
+    res.status(403).json({ error: 'Akses ditolak! Hanya admin yang bisa melakukan ini.' });
+    return null;
+  }
+  return sesi;
+}
+
 // =============================================
 //   AUTH ROUTES
 // =============================================
@@ -64,8 +77,12 @@ app.post('/api/register', async (req, res) => {
   if (db.data.users.find(u => u.email === email))
     return res.status(409).json({ error: 'Email sudah terdaftar!' });
 
+  const role = email === ADMIN_EMAIL ? 'admin' : 'kasir';
   const passwordTerenkripsi = await bcrypt.hash(password, 10);
-  db.data.users.push({ id: Date.now(), nama, email, password: passwordTerenkripsi, createdAt: new Date().toISOString() });
+  db.data.users.push({
+    id: Date.now(), nama, email, password: passwordTerenkripsi,
+    role, createdAt: new Date().toISOString(), aktif: true
+  });
   await db.write();
   res.status(201).json({ message: 'Registrasi berhasil! Silakan login.' });
 });
@@ -78,11 +95,23 @@ app.post('/api/login', async (req, res) => {
   const user = db.data.users.find(u => u.email === email);
   if (!user) return res.status(401).json({ error: 'Email atau password salah!' });
 
+  if (user.aktif === false)
+    return res.status(403).json({ error: 'Akun Anda dinonaktifkan. Hubungi admin!' });
+
   const cocok = await bcrypt.compare(password, user.password);
   if (!cocok) return res.status(401).json({ error: 'Email atau password salah!' });
 
-  const token = jwt.sign({ id: user.id, nama: user.nama, email: user.email }, SECRET, { expiresIn: '1d' });
-  res.json({ message: 'Login berhasil!', token, user: { id: user.id, nama: user.nama, email: user.email } });
+  // Set role admin kalau email cocok
+  const role = email === ADMIN_EMAIL ? 'admin' : (user.role || 'kasir');
+
+  const token = jwt.sign(
+    { id: user.id, nama: user.nama, email: user.email, role },
+    SECRET, { expiresIn: '1d' }
+  );
+  res.json({
+    message: 'Login berhasil!', token,
+    user: { id: user.id, nama: user.nama, email: user.email, role }
+  });
 });
 
 app.get('/api/profil', (req, res) => {
@@ -103,8 +132,9 @@ app.put('/api/edit-profil', async (req, res) => {
   db.data.users[index].nama  = nama;
   db.data.users[index].email = email;
   await db.write();
-  const tokenBaru = jwt.sign({ id: sesi.id, nama, email }, SECRET, { expiresIn: '1d' });
-  res.json({ message: 'Profil berhasil diupdate!', token: tokenBaru, user: { id: sesi.id, nama, email } });
+  const role = db.data.users[index].role || 'kasir';
+  const tokenBaru = jwt.sign({ id: sesi.id, nama, email, role }, SECRET, { expiresIn: '1d' });
+  res.json({ message: 'Profil berhasil diupdate!', token: tokenBaru, user: { id: sesi.id, nama, email, role } });
 });
 
 app.put('/api/ganti-password', async (req, res) => {
@@ -120,6 +150,66 @@ app.put('/api/ganti-password', async (req, res) => {
   db.data.users[index].password = await bcrypt.hash(passwordBaru, 10);
   await db.write();
   res.json({ message: 'Password berhasil diganti! Silakan login ulang.' });
+});
+
+// =============================================
+//   ADMIN - USER MANAGEMENT
+// =============================================
+
+// GET semua user (admin only)
+app.get('/api/users', (req, res) => {
+  const sesi = cekAdmin(req, res);
+  if (!sesi) return;
+  const users = db.data.users.map(u => ({
+    id: u.id, nama: u.nama, email: u.email,
+    role: u.role, aktif: u.aktif !== false, createdAt: u.createdAt
+  }));
+  res.json(users);
+});
+
+// PUT nonaktifkan/aktifkan user (admin only)
+app.put('/api/users/:id/toggle', async (req, res) => {
+  const sesi = cekAdmin(req, res);
+  if (!sesi) return;
+  const id = parseInt(req.params.id);
+  const index = db.data.users.findIndex(u => u.id === id);
+  if (index === -1) return res.status(404).json({ error: 'User tidak ditemukan!' });
+  if (db.data.users[index].email === ADMIN_EMAIL)
+    return res.status(400).json({ error: 'Tidak bisa menonaktifkan admin!' });
+  db.data.users[index].aktif = !db.data.users[index].aktif;
+  await db.write();
+  res.json({ message: 'Status user diupdate!', aktif: db.data.users[index].aktif });
+});
+
+// PUT ganti role user (admin only)
+app.put('/api/users/:id/role', async (req, res) => {
+  const sesi = cekAdmin(req, res);
+  if (!sesi) return;
+  const id = parseInt(req.params.id);
+  const { role } = req.body;
+  if (!['admin', 'kasir'].includes(role))
+    return res.status(400).json({ error: 'Role tidak valid!' });
+  const index = db.data.users.findIndex(u => u.id === id);
+  if (index === -1) return res.status(404).json({ error: 'User tidak ditemukan!' });
+  if (db.data.users[index].email === ADMIN_EMAIL)
+    return res.status(400).json({ error: 'Tidak bisa mengubah role admin utama!' });
+  db.data.users[index].role = role;
+  await db.write();
+  res.json({ message: 'Role user diupdate!' });
+});
+
+// DELETE user (admin only)
+app.delete('/api/users/:id', async (req, res) => {
+  const sesi = cekAdmin(req, res);
+  if (!sesi) return;
+  const id = parseInt(req.params.id);
+  const user = db.data.users.find(u => u.id === id);
+  if (!user) return res.status(404).json({ error: 'User tidak ditemukan!' });
+  if (user.email === ADMIN_EMAIL)
+    return res.status(400).json({ error: 'Tidak bisa menghapus admin utama!' });
+  db.data.users = db.data.users.filter(u => u.id !== id);
+  await db.write();
+  res.json({ message: 'User dihapus!' });
 });
 
 // =============================================
@@ -175,7 +265,6 @@ app.post('/api/transaksi', async (req, res) => {
   const { noTransaksi, items, subtotal, diskon, total, bayar, kembalian, kasir } = req.body;
   if (!items || !items.length) return res.status(400).json({ error: 'Items tidak boleh kosong!' });
 
-  // Kurangi stok
   for (const item of items) {
     const idx = db.data.produk.findIndex(p => p.id === item.id);
     if (idx === -1) return res.status(404).json({ error: `Produk ${item.nama} tidak ditemukan!` });
@@ -212,13 +301,11 @@ app.get('/api/laporan', (req, res) => {
   if (periode === 'bulan')  cutoff = new Date(now - 30 * 86400000);
 
   const trxFiltered = db.data.transaksi.filter(t => new Date(t.waktu) >= cutoff);
-
   const totalPendapatan = trxFiltered.reduce((s, t) => s + t.total, 0);
   const jumlahTrx       = trxFiltered.length;
   const totalItem       = trxFiltered.reduce((s, t) => s + t.items.reduce((a, i) => a + i.qty, 0), 0);
   const rataRata        = jumlahTrx > 0 ? Math.round(totalPendapatan / jumlahTrx) : 0;
 
-  // Harian
   const harianMap = {};
   trxFiltered.forEach(t => {
     const tgl = t.waktu.slice(0, 10);
@@ -226,7 +313,6 @@ app.get('/api/laporan', (req, res) => {
   });
   const harian = Object.entries(harianMap).sort().map(([tanggal, total]) => ({ tanggal, total }));
 
-  // Terlaris
   const produkMap = {};
   trxFiltered.forEach(t => {
     t.items.forEach(i => {
