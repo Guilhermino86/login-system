@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kasir - Skinthesia</title>
+  <link rel="stylesheet" href="kasir-style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+  /* ====== NOTA PREMIUM ====== */
+  .struk-wrapper {
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-height: 95vh;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .nota-premium {
+    background: white;
+    width: 340px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    position: relative;
+  }
+  .nota-premium::before {
+    content: '';
+    display: block;
+    height: 6px;
+    background: linear-gradient(90deg, #b8860b, #ffd700, #daa520, #ffd700, #b8860b);
+  }
+  .nota-header {
+    background: #0f172a;
+    color: white;
+    text-align: center;
+    padding: 24px 20px 20px;
+  }
+  .nota-logo-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #b8860b, #ffd700);
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    font-size: 20px; color: #0f172a; font-weight: 900;
+    box-shadow: 0 4px 12px rgba(218,165,32,0.4);
+    margin-bottom: 10px;
+  }
+  .nota-toko-nama {
+    font-size: 22px; font-weight: 900;
+    letter-spacing: 4px; color: #ffd700; margin-bottom: 4px;
+  }
+  .nota-toko-tagline {
+    font-size: 10px; color: #94a3b8;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .nota-toko-info {
+    display: flex; justify-content: center;
+    gap: 16px; font-size: 10px; color: #64748b;
+  }
+  .nota-divider-fancy {
+    display: flex; align-items: center;
+    gap: 8px; margin-top: 16px; color: #b8860b; font-size: 10px;
+  }
+  .nota-divider-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, #b8860b, transparent);
+  }
+  .nota-trx-info {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6px; padding: 16px 20px;
+    background: #f8fafc; font-size: 11px;
+  }
+  .nota-trx-item { display: flex; flex-direction: column; gap: 2px; }
+  .nota-trx-label { color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; font-size: 9px; }
+  .nota-trx-val   { color: #0f172a; font-weight: 700; font-size: 12px; }
+  .nota-garis-putus { border: none; border-top: 1.5px dashed #e2e8f0; margin: 0 20px; }
+  .nota-items-header {
+    display: grid; grid-template-columns: 2fr 0.5fr 1fr 1fr;
+    padding: 10px 20px 6px;
+    font-size: 9px; font-weight: 800; color: #94a3b8;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  .nota-items { padding: 4px 20px 12px; }
+  .nota-item {
+    display: grid; grid-template-columns: 2fr 0.5fr 1fr 1fr;
+    padding: 7px 0; border-bottom: 1px solid #f1f5f9;
+    font-size: 12px; align-items: center;
+  }
+  .nota-item:last-child { border-bottom: none; }
+  .nota-item-nama  { font-weight: 600; color: #1e293b; }
+  .nota-item-qty   { color: #64748b; font-weight: 600; text-align: center; }
+  .nota-item-harga, .nota-item-total { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .nota-item-total { font-weight: 700; color: #1e293b; }
+  .nota-summary { padding: 12px 20px 16px; }
+  .nota-sum-row {
+    display: flex; justify-content: space-between;
+    font-size: 12px; padding: 4px 0; color: #475569;
+  }
+  .nota-sum-row span:last-child { font-family: 'JetBrains Mono', monospace; }
+  .nota-sum-diskon { color: #16a34a; }
+  .nota-sum-total {
+    display: flex; justify-content: space-between;
+    font-size: 16px; font-weight: 900;
+    padding: 10px 14px;
+    background: #0f172a; color: #ffd700;
+    border-radius: 8px; margin: 10px 0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .nota-sum-bayar {
+    display: flex; justify-content: space-between;
+    font-size: 12px; padding: 3px 0; color: #64748b;
+  }
+  .nota-sum-bayar span:last-child { font-family: 'JetBrains Mono', monospace; }
+  .nota-sum-kembalian {
+    display: flex; justify-content: space-between;
+    font-size: 13px; font-weight: 700; padding: 4px 0; color: #16a34a;
+  }
+  .nota-sum-kembalian span:last-child { font-family: 'JetBrains Mono', monospace; }
+  .nota-footer { background: #0f172a; padding: 20px; text-align: center; }
+  .nota-thanks { font-size: 15px; font-weight: 800; color: #ffd700; letter-spacing: 2px; margin-bottom: 6px; }
+  .nota-thanks-sub { font-size: 10px; color: #64748b; margin-bottom: 8px; }
+  .nota-website { font-size: 10px; color: #475569; letter-spacing: 1px; margin-bottom: 14px; }
+  .nota-barcode { display: flex; justify-content: center; gap: 2px; }
+  .nota-premium::after {
+    content: ''; display: block; height: 6px;
+    background: linear-gradient(90deg, #b8860b, #ffd700, #daa520, #ffd700, #b8860b);
+  }
+  .nota-actions { display: flex; gap: 12px; width: 340px; }
+  .nota-btn-print {
+    flex: 1; padding: 13px;
+    background: #1e293b; color: #ffd700;
+    border: 2px solid #b8860b; border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.15s;
+  }
+  .nota-btn-print:hover { background: #0f172a; transform: translateY(-1px); }
+  .nota-btn-tutup {
+    flex: 1; padding: 13px;
+    background: linear-gradient(135deg, #b8860b, #daa520);
+    color: #0f172a; border: none; border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 14px; font-weight: 800; cursor: pointer; transition: all 0.15s;
+  }
+  .nota-btn-tutup:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(184,134,11,0.4); }
+
+  @media print {
+    body > * { display: none !important; }
+    .modal-overlay { display: block !important; position: static !important; background: none !important; padding: 0 !important; }
+    .struk-wrapper { padding: 0 !important; gap: 0 !important; }
+    .nota-premium { box-shadow: none !important; width: 100% !important; max-width: 80mm; margin: 0 auto; }
+    .no-print { display: none !important; }
+    @page { margin: 3mm; size: 80mm auto; }
+  }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">✦</div>
+    <span class="brand-name">Skinthesia</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="kasir.html" class="nav-item aktif">
+      <span class="nav-icon">🧾</span><span>Kasir</span>
+    </a>
+    <a href="produk.html" class="nav-item">
+      <span class="nav-icon">📦</span><span>Produk</span>
+    </a>
+    <a href="riwayat.html" class="nav-item">
+      <span class="nav-icon">📋</span><span>Riwayat</span>
+    </a>
+    <a href="laporan.html" class="nav-item">
+      <span class="nav-icon">📊</span><span>Laporan</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="avatarSidebar">K</div>
+      <div>
+        <div class="user-nama" id="namaSidebar">-</div>
+        <div class="user-role">Kasir</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="keluar()">🚪</button>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1 class="page-title">Transaksi Baru</h1>
+      <p class="page-sub" id="tanggalSekarang"></p>
+    </div>
+    <div class="topbar-right">
+      <div class="badge-transaksi">
+        <span>No. Transaksi</span>
+        <strong id="noTransaksi">#TRX-0001</strong>
+      </div>
+    </div>
+  </header>
+
+  <div class="kasir-layout">
+    <section class="panel-produk">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="cariProduk" placeholder="Cari produk..." oninput="filterProduk()" />
+      </div>
+      <div class="produk-grid" id="produkGrid">
+        <div class="loading-state">Memuat produk...</div>
+      </div>
+    </section>
+
+    <section class="panel-keranjang">
+      <h2 class="keranjang-title">🛒 Keranjang</h2>
+      <div class="keranjang-items" id="keranjangItems">
+        <div class="empty-cart">
+          <div class="empty-icon">🛒</div>
+          <p>Keranjang kosong</p>
+          <small>Klik produk untuk menambahkan</small>
+        </div>
+      </div>
+      <div class="keranjang-summary">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subtotal">$ 0</span>
+        </div>
+        <div class="summary-row diskon-row">
+          <span>Diskon</span>
+          <div class="diskon-input-wrap">
+            <span>$</span>
+            <input type="number" id="diskon" value="0" min="0" oninput="hitungTotal()" />
+          </div>
+        </div>
+        <div class="summary-row total-row">
+          <span>TOTAL</span>
+          <span id="total" class="total-angka">$ 0</span>
+        </div>
+      </div>
+      <div class="bayar-section">
+        <label class="bayar-label">Uang Diterima</label>
+        <div class="bayar-input-wrap">
+          <span class="bayar-prefix">$</span>
+          <input type="number" id="uangDiterima" placeholder="0" oninput="hitungKembalian()" />
+        </div>
+        <div class="kembalian-box" id="kembalianBox" style="display:none">
+          <span>Kembalian</span>
+          <strong id="kembalian">$ 0</strong>
+        </div>
+      </div>
+      <div class="keranjang-actions">
+        <button class="btn-batal" onclick="batalTransaksi()">🗑️ Batal</button>
+        <button class="btn-bayar" id="btnBayar" onclick="prosesTransaksi()">✅ Bayar Sekarang</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- NOTA PREMIUM -->
+<div class="modal-overlay" id="modalStruk" style="display:none">
+  <div class="struk-wrapper">
+    <div class="nota-premium" id="notaPrint">
+
+      <div class="nota-header">
+        <div class="nota-logo-icon">✦</div>
+        <div class="nota-toko-nama">SKINTHESIA</div>
+        <div class="nota-toko-tagline">Premium Skin Care & Beauty</div>
+        <div class="nota-toko-info">
+          <span>📍 Dili, Timor-Leste</span>
+          <span>📞 +670 XXX XXXX</span>
+        </div>
+        <div class="nota-divider-fancy">
+          <span>◆</span><span class="nota-divider-line"></span><span>◆</span>
+        </div>
+      </div>
+
+      <div class="nota-trx-info" id="notaTrxInfo"></div>
+      <div class="nota-garis-putus"></div>
+
+      <div class="nota-items-header">
+        <span>ITEM</span><span style="text-align:center">QTY</span>
+        <span style="text-align:right">HARGA</span><span style="text-align:right">TOTAL</span>
+      </div>
+      <div class="nota-items" id="notaItems"></div>
+      <div class="nota-garis-putus"></div>
+
+      <div class="nota-summary" id="notaSummary"></div>
+
+      <div class="nota-footer">
+        <div class="nota-divider-fancy" style="margin-bottom:16px">
+          <span>◆</span><span class="nota-divider-line"></span><span>◆</span>
+        </div>
+        <div class="nota-thanks">✦ Terima Kasih ✦</div>
+        <div class="nota-thanks-sub">Atas kepercayaan Anda berbelanja di Skinthesia</div>
+        <div class="nota-website">skin-thesia.up.railway.app</div>
+        <div class="nota-barcode" id="notaBarcode"></div>
+      </div>
+    </div>
+
+    <div class="nota-actions no-print">
+      <button class="nota-btn-print" onclick="printStruk()">🖨️ Print Nota</button>
+      <button class="nota-btn-tutup" onclick="tutupStruk()">✅ Selesai</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem('token');
+  const user  = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) window.location.href = 'index.html';
+
+  document.getElementById('namaSidebar').textContent = user.nama || '-';
+  document.getElementById('avatarSidebar').textContent = (user.nama || 'K')[0].toUpperCase();
+
+  const now = new Date();
+  document.getElementById('tanggalSekarang').textContent = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  let semuaProduk = [];
+  let keranjang   = [];
+  let noUrut      = 1;
+
+  function generateNoTransaksi() {
+    const d = new Date();
+    const tgl = d.toISOString().slice(0,10).replace(/-/g,'');
+    return '#TRX-' + tgl + '-' + String(noUrut).padStart(4,'0');
+  }
+  document.getElementById('noTransaksi').textContent = generateNoTransaksi();
+
+  async function loadProduk() {
+    try {
+      const res = await fetch('/api/produk', { headers: { 'Authorization': 'Bearer ' + token } });
+      semuaProduk = await res.json();
+      renderProduk(semuaProduk);
+    } catch {
+      document.getElementById('produkGrid').innerHTML = '<div class="empty-state">Gagal memuat produk</div>';
+    }
+  }
+
+  function renderProduk(list) {
+    const grid = document.getElementById('produkGrid');
+    if (!list.length) {
+      grid.innerHTML = '<div class="empty-state">Belum ada produk.<br><a href="produk.html">Tambah produk</a></div>';
+      return;
+    }
+    grid.innerHTML = list.map(p => `
+      <div class="produk-card ${p.stok === 0 ? 'habis' : ''}" onclick="${p.stok > 0 ? 'tambahKeranjang(' + p.id + ')' : ''}">
+        <div class="produk-emoji">${p.emoji || '📦'}</div>
+        <div class="produk-nama">${p.nama}</div>
+        <div class="produk-harga">${formatUSD(p.harga)}</div>
+        <div class="produk-stok ${p.stok <= 5 ? 'stok-rendah' : ''}">
+          ${p.stok === 0 ? '❌ Habis' : 'Stok: ' + p.stok}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function filterProduk() {
+    const q = document.getElementById('cariProduk').value.toLowerCase();
+    renderProduk(semuaProduk.filter(p => p.nama.toLowerCase().includes(q)));
+  }
+
+  function tambahKeranjang(id) {
+    const produk = semuaProduk.find(p => p.id === id);
+    if (!produk || produk.stok === 0) return;
+    const ada = keranjang.find(k => k.id === id);
+    if (ada) {
+      if (ada.qty >= produk.stok) { alert('Stok ' + produk.nama + ' hanya ' + produk.stok); return; }
+      ada.qty++;
+    } else {
+      keranjang.push({ ...produk, qty: 1 });
+    }
+    renderKeranjang();
+  }
+
+  function ubahQty(id, delta) {
+    const idx = keranjang.findIndex(k => k.id === id);
+    if (idx === -1) return;
+    keranjang[idx].qty += delta;
+    if (keranjang[idx].qty <= 0) keranjang.splice(idx, 1);
+    renderKeranjang();
+  }
+
+  function hapusItem(id) {
+    keranjang = keranjang.filter(k => k.id !== id);
+    renderKeranjang();
+  }
+
+  function renderKeranjang() {
+    const el = document.getElementById('keranjangItems');
+    if (!keranjang.length) {
+      el.innerHTML = '<div class="empty-cart"><div class="empty-icon">🛒</div><p>Keranjang kosong</p><small>Klik produk untuk menambahkan</small></div>';
+      hitungTotal();
+      return;
+    }
+    el.innerHTML = keranjang.map(k => `
+      <div class="keranjang-item">
+        <div class="ki-info">
+          <span class="ki-emoji">${k.emoji || '📦'}</span>
+          <div>
+            <div class="ki-nama">${k.nama}</div>
+            <div class="ki-harga">${formatUSD(k.harga)}</div>
+          </div>
+        </div>
+        <div class="ki-qty">
+          <button onclick="ubahQty(${k.id}, -1)">−</button>
+          <span>${k.qty}</span>
+          <button onclick="ubahQty(${k.id}, 1)">+</button>
+        </div>
+        <div class="ki-subtotal">${formatUSD(k.harga * k.qty)}</div>
+        <button class="ki-hapus" onclick="hapusItem(${k.id})">✕</button>
+      </div>
+    `).join('');
+    hitungTotal();
+  }
+
+  function hitungTotal() {
+    const subtotal = keranjang.reduce((s, k) => s + k.harga * k.qty, 0);
+    const diskon   = parseInt(document.getElementById('diskon').value) || 0;
+    const total    = Math.max(0, subtotal - diskon);
+    document.getElementById('subtotal').textContent = formatUSD(subtotal);
+    document.getElementById('total').textContent    = formatUSD(total);
+    hitungKembalian();
+  }
+
+  function hitungKembalian() {
+    const diskon   = parseInt(document.getElementById('diskon').value) || 0;
+    const subtotal = keranjang.reduce((s, k) => s + k.harga * k.qty, 0);
+    const total    = Math.max(0, subtotal - diskon);
+    const bayar    = parseInt(document.getElementById('uangDiterima').value) || 0;
+    const box      = document.getElementById('kembalianBox');
+    if (bayar > 0) {
+      const kembalian = bayar - total;
+      document.getElementById('kembalian').textContent = formatUSD(kembalian);
+      box.style.display = 'flex';
+      box.style.color = kembalian < 0 ? '#ef4444' : '#16a34a';
+    } else {
+      box.style.display = 'none';
+    }
+  }
+
+  function batalTransaksi() {
+    if (keranjang.length && !confirm('Batalkan transaksi?')) return;
+    keranjang = [];
+    document.getElementById('diskon').value = 0;
+    document.getElementById('uangDiterima').value = '';
+    document.getElementById('kembalianBox').style.display = 'none';
+    renderKeranjang();
+    noUrut++;
+    document.getElementById('noTransaksi').textContent = generateNoTransaksi();
+  }
+
+  async function prosesTransaksi() {
+    if (!keranjang.length) { alert('Keranjang kosong!'); return; }
+    const diskon   = parseInt(document.getElementById('diskon').value) || 0;
+    const subtotal = keranjang.reduce((s, k) => s + k.harga * k.qty, 0);
+    const total    = Math.max(0, subtotal - diskon);
+    const bayar    = parseInt(document.getElementById('uangDiterima').value) || 0;
+    if (bayar < total) { alert('Uang diterima kurang!'); return; }
+
+    const btn = document.getElementById('btnBayar');
+    btn.disabled = true;
+    btn.textContent = 'Memproses...';
+
+    try {
+      const res = await fetch('/api/transaksi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({
+          noTransaksi: generateNoTransaksi(),
+          items: keranjang.map(k => ({ id: k.id, nama: k.nama, harga: k.harga, qty: k.qty })),
+          subtotal, diskon, total, bayar,
+          kembalian: bayar - total,
+          kasir: user.nama
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || 'Transaksi gagal!');
+      } else {
+        const hasil = await res.json();
+        tampilNota(hasil.transaksi);
+        await loadProduk();
+        noUrut++;
+        document.getElementById('noTransaksi').textContent = generateNoTransaksi();
+      }
+    } catch {
+      alert('Tidak bisa terhubung ke server!');
+    }
+
+    btn.disabled = false;
+    btn.textContent = '✅ Bayar Sekarang';
+  }
+
+  function tampilNota(trx) {
+    // Info transaksi
+    document.getElementById('notaTrxInfo').innerHTML = `
+      <div class="nota-trx-item">
+        <span class="nota-trx-label">No. Transaksi</span>
+        <span class="nota-trx-val">${trx.noTransaksi}</span>
+      </div>
+      <div class="nota-trx-item">
+        <span class="nota-trx-label">Tanggal</span>
+        <span class="nota-trx-val">${new Date(trx.waktu).toLocaleDateString('id-ID')}</span>
+      </div>
+      <div class="nota-trx-item">
+        <span class="nota-trx-label">Waktu</span>
+        <span class="nota-trx-val">${new Date(trx.waktu).toLocaleTimeString('id-ID')}</span>
+      </div>
+      <div class="nota-trx-item">
+        <span class="nota-trx-label">Kasir</span>
+        <span class="nota-trx-val">${trx.kasir}</span>
+      </div>
+    `;
+
+    // Items
+    document.getElementById('notaItems').innerHTML = trx.items.map(i => `
+      <div class="nota-item">
+        <span class="nota-item-nama">${i.nama}</span>
+        <span class="nota-item-qty">${i.qty}</span>
+        <span class="nota-item-harga">${formatUSD(i.harga)}</span>
+        <span class="nota-item-total">${formatUSD(i.harga * i.qty)}</span>
+      </div>
+    `).join('');
+
+    // Summary
+    document.getElementById('notaSummary').innerHTML = `
+      <div class="nota-sum-row">
+        <span>Subtotal</span><span>${formatUSD(trx.subtotal)}</span>
+      </div>
+      ${trx.diskon > 0 ? `<div class="nota-sum-row nota-sum-diskon"><span>Diskon</span><span>-${formatUSD(trx.diskon)}</span></div>` : ''}
+      <div class="nota-sum-total">
+        <span>TOTAL</span><span>${formatUSD(trx.total)}</span>
+      </div>
+      <div class="nota-sum-bayar">
+        <span>Uang Diterima</span><span>${formatUSD(trx.bayar)}</span>
+      </div>
+      <div class="nota-sum-kembalian">
+        <span>Kembalian</span><span>${formatUSD(trx.kembalian)}</span>
+      </div>
+    `;
+
+    // Barcode visual
+    const barcode = document.getElementById('notaBarcode');
+    let bars = '';
+    for (let i = 0; i < 40; i++) {
+      const h = Math.floor(Math.random() * 24) + 12;
+      const w = Math.random() > 0.5 ? 2 : 1;
+      bars += `<div style="width:${w}px;height:${h}px;background:#94a3b8;border-radius:1px"></div>`;
+    }
+    barcode.innerHTML = bars;
+
+    document.getElementById('modalStruk').style.display = 'flex';
+  }
+
+  function tutupStruk() {
+    document.getElementById('modalStruk').style.display = 'none';
+    keranjang = [];
+    document.getElementById('diskon').value = 0;
+    document.getElementById('uangDiterima').value = '';
+    document.getElementById('kembalianBox').style.display = 'none';
+    renderKeranjang();
+  }
+
+  function printStruk() { window.print(); }
+
+  function keluar() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+
+  function formatUSD(n) {
+    return '$ ' + Number(n||0).toLocaleString('en-US');
+  }
+
+  loadProduk();
+</script>
+</body>
+</html>
