@@ -13,17 +13,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 16px;
     width: 100%;
-    max-height: 95vh;
+    min-height: 100vh;
     overflow-y: auto;
-    padding: 20px;
+    padding: 0 20px 20px;
   }
   .nota-premium {
     background: white;
     width: 340px;
-    border-radius: 4px;
+    border-radius: 0 0 4px 4px;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0,0,0,0.35);
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -559,8 +559,15 @@
 
     const m = document.getElementById('modalStruk');
     m.style.display = 'flex';
-    m.style.alignItems = 'center';
+    m.style.alignItems = 'flex-start';
     m.style.justifyContent = 'center';
+    m.style.position = 'fixed';
+    m.style.top = '0';
+    m.style.left = '0';
+    m.style.right = '0';
+    m.style.bottom = '0';
+    m.style.overflowY = 'auto';
+    m.style.padding = '0';
   }
 
   function tutupStruk() {
