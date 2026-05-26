@@ -7,18 +7,6 @@
   <link rel="stylesheet" href="kasir-style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <style>
-  /* ====== MODAL OVERLAY CENTER ====== */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 20px;
-  }
-
   /* ====== NOTA PREMIUM ====== */
   .struk-wrapper {
     background: transparent;
@@ -27,6 +15,7 @@
     align-items: center;
     justify-content: center;
     gap: 16px;
+    width: 100%;
     max-height: 95vh;
     overflow-y: auto;
     padding: 20px;
@@ -63,16 +52,16 @@
     margin-bottom: 10px;
   }
   .nota-toko-nama {
-    font-size: 22px; font-weight: 900;
-    letter-spacing: 4px; color: #ffd700; margin-bottom: 4px;
+    font-size: 20px; font-weight: 900; text-align: center;
+    letter-spacing: 2px; color: #ffd700; margin-bottom: 4px; text-align: center;
   }
   .nota-toko-tagline {
     font-size: 10px; color: #94a3b8;
-    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; text-align: center;
   }
   .nota-toko-info {
     display: flex; justify-content: center;
-    gap: 16px; font-size: 10px; color: #64748b;
+    gap: 16px; font-size: 10px; color: #64748b; flex-wrap: wrap; text-align: center;
   }
   .nota-divider-fancy {
     display: flex; align-items: center;
@@ -105,7 +94,7 @@
   }
   .nota-item:last-child { border-bottom: none; }
   .nota-item-nama  { font-weight: 600; color: #1e293b; }
-  .nota-item-qty   { color: #64748b; font-weight: 600; text-align: center; }
+  .nota-item-qty   { color: #64748b; font-weight: 600; text-align: center; display: flex; justify-content: center; }
   .nota-item-harga, .nota-item-total { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
   .nota-item-total { font-weight: 700; color: #1e293b; }
   .nota-summary { padding: 12px 20px 16px; }
@@ -133,10 +122,10 @@
     font-size: 13px; font-weight: 700; padding: 4px 0; color: #16a34a;
   }
   .nota-sum-kembalian span:last-child { font-family: 'JetBrains Mono', monospace; }
-  .nota-footer { background: #0f172a; padding: 20px; text-align: center; }
-  .nota-thanks { font-size: 15px; font-weight: 800; color: #ffd700; letter-spacing: 2px; margin-bottom: 6px; }
-  .nota-thanks-sub { font-size: 10px; color: #64748b; margin-bottom: 8px; }
-  .nota-website { font-size: 10px; color: #475569; letter-spacing: 1px; margin-bottom: 14px; }
+  .nota-footer { background: #0f172a; padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .nota-thanks { font-size: 15px; font-weight: 800; color: #ffd700; letter-spacing: 2px; margin-bottom: 6px; text-align: center; width: 100%; }
+  .nota-thanks-sub { font-size: 10px; color: #64748b; margin-bottom: 8px; text-align: center; width: 100%; }
+  .nota-website { font-size: 10px; color: #475569; letter-spacing: 1px; margin-bottom: 14px; text-align: center; width: 100%; }
   .nota-barcode { display: flex; justify-content: center; gap: 2px; }
   .nota-premium::after {
     content: ''; display: block; height: 6px;
@@ -162,8 +151,9 @@
 
   @media print {
     body > * { display: none !important; }
-    .modal-overlay { display: flex !important; position: static !important; background: none !important; padding: 0 !important; align-items: flex-start !important; justify-content: center !important; }
-    .struk-wrapper { justify-content: flex-start; padding: 0 !important; gap: 0 !important; }
+    .modal-overlay { display: flex !important; align-items: center !important; justify-content: center !important; position: fixed !important; background: rgba(0,0,0,0.6) !important; padding: 20px !important; }
+    .struk-wrapper {
+    justify-content: center; padding: 0 !important; gap: 0 !important; }
     .nota-premium { box-shadow: none !important; width: 100% !important; max-width: 80mm; margin: 0 auto; }
     .no-print { display: none !important; }
     @page { margin: 3mm; size: 80mm auto; }
@@ -240,7 +230,7 @@
       <div class="keranjang-summary">
         <div class="summary-row">
           <span>Subtotal</span>
-          <span id="subtotal">$0.00</span>
+          <span id="subtotal">$ 0</span>
         </div>
         <div class="summary-row diskon-row">
           <span>Diskon</span>
@@ -251,18 +241,18 @@
         </div>
         <div class="summary-row total-row">
           <span>TOTAL</span>
-          <span id="total" class="total-angka">$0.00</span>
+          <span id="total" class="total-angka">$ 0</span>
         </div>
       </div>
       <div class="bayar-section">
         <label class="bayar-label">Uang Diterima</label>
         <div class="bayar-input-wrap">
           <span class="bayar-prefix">$</span>
-          <input type="number" id="uangDiterima" placeholder="0.00" oninput="hitungKembalian()" />
+          <input type="number" id="uangDiterima" placeholder="0" oninput="hitungKembalian()" />
         </div>
         <div class="kembalian-box" id="kembalianBox" style="display:none">
           <span>Kembalian</span>
-          <strong id="kembalian">$0.00</strong>
+          <strong id="kembalian">$ 0</strong>
         </div>
       </div>
       <div class="keranjang-actions">
@@ -274,7 +264,7 @@
 </main>
 
 <!-- NOTA PREMIUM -->
-<div class="modal-overlay" id="modalStruk" style="display:none">
+<div class="modal-overlay" id="modalStruk" style="display:none; align-items:center; justify-content:center;">
   <div class="struk-wrapper">
     <div class="nota-premium" id="notaPrint">
 
@@ -342,14 +332,6 @@
     return '#TRX-' + tgl + '-' + String(noUrut).padStart(4,'0');
   }
   document.getElementById('noTransaksi').textContent = generateNoTransaksi();
-
-  /* ===== FORMAT USD ===== */
-  function formatUSD(n) {
-    return '$' + Number(n || 0).toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    });
-  }
 
   async function loadProduk() {
     try {
@@ -440,7 +422,7 @@
 
   function hitungTotal() {
     const subtotal = keranjang.reduce((s, k) => s + k.harga * k.qty, 0);
-    const diskon   = parseFloat(document.getElementById('diskon').value) || 0;
+    const diskon   = parseInt(document.getElementById('diskon').value) || 0;
     const total    = Math.max(0, subtotal - diskon);
     document.getElementById('subtotal').textContent = formatUSD(subtotal);
     document.getElementById('total').textContent    = formatUSD(total);
@@ -448,10 +430,10 @@
   }
 
   function hitungKembalian() {
-    const diskon   = parseFloat(document.getElementById('diskon').value) || 0;
+    const diskon   = parseInt(document.getElementById('diskon').value) || 0;
     const subtotal = keranjang.reduce((s, k) => s + k.harga * k.qty, 0);
     const total    = Math.max(0, subtotal - diskon);
-    const bayar    = parseFloat(document.getElementById('uangDiterima').value) || 0;
+    const bayar    = parseInt(document.getElementById('uangDiterima').value) || 0;
     const box      = document.getElementById('kembalianBox');
     if (bayar > 0) {
       const kembalian = bayar - total;
@@ -476,10 +458,10 @@
 
   async function prosesTransaksi() {
     if (!keranjang.length) { alert('Keranjang kosong!'); return; }
-    const diskon   = parseFloat(document.getElementById('diskon').value) || 0;
+    const diskon   = parseInt(document.getElementById('diskon').value) || 0;
     const subtotal = keranjang.reduce((s, k) => s + k.harga * k.qty, 0);
     const total    = Math.max(0, subtotal - diskon);
-    const bayar    = parseFloat(document.getElementById('uangDiterima').value) || 0;
+    const bayar    = parseInt(document.getElementById('uangDiterima').value) || 0;
     if (bayar < total) { alert('Uang diterima kurang!'); return; }
 
     const btn = document.getElementById('btnBayar');
@@ -518,6 +500,7 @@
   }
 
   function tampilNota(trx) {
+    // Info transaksi
     document.getElementById('notaTrxInfo').innerHTML = `
       <div class="nota-trx-item">
         <span class="nota-trx-label">No. Transaksi</span>
@@ -537,6 +520,7 @@
       </div>
     `;
 
+    // Items
     document.getElementById('notaItems').innerHTML = trx.items.map(i => `
       <div class="nota-item">
         <span class="nota-item-nama">${i.nama}</span>
@@ -546,6 +530,7 @@
       </div>
     `).join('');
 
+    // Summary
     document.getElementById('notaSummary').innerHTML = `
       <div class="nota-sum-row">
         <span>Subtotal</span><span>${formatUSD(trx.subtotal)}</span>
@@ -562,6 +547,7 @@
       </div>
     `;
 
+    // Barcode visual
     const barcode = document.getElementById('notaBarcode');
     let bars = '';
     for (let i = 0; i < 40; i++) {
@@ -571,7 +557,10 @@
     }
     barcode.innerHTML = bars;
 
-    document.getElementById('modalStruk').style.display = 'flex';
+    const m = document.getElementById('modalStruk');
+    m.style.display = 'flex';
+    m.style.alignItems = 'center';
+    m.style.justifyContent = 'center';
   }
 
   function tutupStruk() {
@@ -589,6 +578,10 @@
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = 'index.html';
+  }
+
+  function formatUSD(n) {
+    return '$ ' + Number(n||0).toLocaleString('en-US');
   }
 
   loadProduk();
