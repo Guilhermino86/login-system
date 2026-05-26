@@ -135,15 +135,21 @@
 
   /* ===== PRINT ===== */
   @media print {
-    @page { size: 80mm auto; margin: 4mm; }
+    @page { size: A4; margin: 15mm; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
     body > * { display: none !important; }
     .nota-overlay {
       position: static !important; background: none !important;
-      padding: 0 !important; display: block !important;
+      padding: 0 !important; display: flex !important;
+      justify-content: center !important; align-items: center !important;
+      min-height: 100vh !important;
     }
-    .nota-wrap { max-width: 100% !important; gap: 0 !important; }
-    .nota { box-shadow: none !important; border-radius: 0 !important; }
+    .nota-wrap {
+      width: 380px !important;
+      margin: 0 auto !important;
+      gap: 0 !important;
+    }
+    .nota { box-shadow: none !important; width: 100% !important; }
     .nota-btns { display: none !important; }
   }
   </style>
