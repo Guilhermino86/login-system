@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Skinthesia</title>
+  <link rel="stylesheet" href="kasir-style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    .badge-role { padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    .role-admin { background: #fef3c7; color: #d97706; }
+    .role-kasir { background: #eff6ff; color: #2563eb; }
+    .badge-status { padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+    .status-aktif    { background: #f0fdf4; color: #16a34a; }
+    .status-nonaktif { background: #fef2f2; color: #dc2626; }
+    .btn-toggle-on  { background: #fef2f2; color: #dc2626; border: none; border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-toggle-off { background: #f0fdf4; color: #16a34a; border: none; border-radius: 7px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-toggle-on:hover  { background: #dc2626; color: white; }
+    .btn-toggle-off:hover { background: #16a34a; color: white; }
+    .stat-admin { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin: 20px 32px; }
+    .stat-admin-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 20px; display: flex; align-items: center; gap: 14px; }
+    .stat-admin-icon { font-size: 28px; }
+    .stat-admin-val  { font-size: 24px; font-weight: 800; }
+    .stat-admin-label { font-size: 13px; color: #6b7280; }
+    .select-role { padding: 5px 10px; border: 1.5px solid #e5e7eb; border-radius: 7px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; outline: none; }
+    .select-role:focus { border-color: #2563eb; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">✦</div>
+    <span class="brand-name">Skinthesia</span>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="nav-item"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+    <a href="kasir.html" class="nav-item"><span class="nav-icon">🧾</span><span>Kasir</span></a>
+    <a href="produk.html" class="nav-item"><span class="nav-icon">📦</span><span>Produk</span></a>
+    <a href="riwayat.html" class="nav-item"><span class="nav-icon">📋</span><span>Riwayat</span></a>
+    <a href="laporan.html" class="nav-item"><span class="nav-icon">📊</span><span>Laporan</span></a>
+    <a href="admin.html" class="nav-item aktif"><span class="nav-icon">👥</span><span>Kelola User</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar" id="avatarSidebar">A</div>
+      <div>
+        <div class="user-nama" id="namaSidebar">-</div>
+        <div class="user-role">Admin</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="keluar()">🚪</button>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <h1 class="page-title">Kelola User</h1>
+      <p class="page-sub">Manajemen akun kasir dan admin</p>
+    </div>
+  </header>
+
+  <!-- Stat cards -->
+  <div class="stat-admin">
+    <div class="stat-admin-card">
+      <div class="stat-admin-icon">👥</div>
+      <div>
+        <div class="stat-admin-val" id="totalUser">0</div>
+        <div class="stat-admin-label">Total User</div>
+      </div>
+    </div>
+    <div class="stat-admin-card">
+      <div class="stat-admin-icon">✅</div>
+      <div>
+        <div class="stat-admin-val" id="userAktif">0</div>
+        <div class="stat-admin-label">User Aktif</div>
+      </div>
+    </div>
+    <div class="stat-admin-card">
+      <div class="stat-admin-icon">🧾</div>
+      <div>
+        <div class="stat-admin-val" id="totalKasir">0</div>
+        <div class="stat-admin-label">Kasir</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-card">
+    <div class="table-toolbar">
+      <input type="text" id="cariUser" placeholder="🔍 Cari nama atau email..." oninput="filterUser()" class="input-cari" />
+      <span id="jumlahUser" class="badge-count">0 user</span>
+    </div>
+    <div class="table-wrap">
+      <table class="tabel">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Bergabung</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tabelUser">
+          <tr><td colspan="6" class="td-loading">Memuat...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script>
+  const token = localStorage.getItem('token');
+  const user  = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Cek harus admin
+  if (!token) window.location.href = 'index.html';
+  if (user.role !== 'admin') window.location.href = 'dashboard.html';
+
+  document.getElementById('namaSidebar').textContent = user.nama || '-';
+  document.getElementById('avatarSidebar').textContent = (user.nama || 'A')[0].toUpperCase();
+
+  let semuaUser = [];
+
+  async function loadUser() {
+    try {
+      const res = await fetch('/api/users', { headers: { 'Authorization': 'Bearer ' + token } });
+      if (!res.ok) { window.location.href = 'dashboard.html'; return; }
+      semuaUser = await res.json();
+      renderStat();
+      renderTabel(semuaUser);
+    } catch { alert('Gagal memuat data user!'); }
+  }
+
+  function renderStat() {
+    document.getElementById('totalUser').textContent  = semuaUser.length;
+    document.getElementById('userAktif').textContent  = semuaUser.filter(u => u.aktif).length;
+    document.getElementById('totalKasir').textContent = semuaUser.filter(u => u.role === 'kasir').length;
+  }
+
+  function renderTabel(list) {
+    document.getElementById('jumlahUser').textContent = list.length + ' user';
+    const tbody = document.getElementById('tabelUser');
+    if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="td-empty">Belum ada user</td></tr>'; return; }
+    tbody.innerHTML = list.map(u => `
+      <tr>
+        <td><strong>${u.nama}</strong></td>
+        <td style="font-size:13px;color:#6b7280">${u.email}</td>
+        <td>
+          ${u.email === 'deusguilherminode@gmail.com'
+            ? '<span class="badge-role role-admin">👑 Admin</span>'
+            : `<select class="select-role" onchange="gantiRole(${u.id}, this.value)">
+                <option value="kasir" ${u.role==='kasir'?'selected':''}>🧾 Kasir</option>
+                <option value="admin" ${u.role==='admin'?'selected':''}>👑 Admin</option>
+               </select>`
+          }
+        </td>
+        <td>
+          <span class="badge-status ${u.aktif ? 'status-aktif' : 'status-nonaktif'}">
+            ${u.aktif ? '✅ Aktif' : '❌ Nonaktif'}
+          </span>
+        </td>
+        <td style="font-size:12px;color:#6b7280">${new Date(u.createdAt).toLocaleDateString('id-ID')}</td>
+        <td class="td-aksi">
+          ${u.email !== 'deusguilherminode@gmail.com' ? `
+            <button class="${u.aktif ? 'btn-toggle-on' : 'btn-toggle-off'}" onclick="toggleUser(${u.id})">
+              ${u.aktif ? '🚫 Nonaktifkan' : '✅ Aktifkan'}
+            </button>
+            <button class="btn-hapus" onclick="hapusUser(${u.id}, '${u.nama}')">🗑️</button>
+          ` : '<span style="font-size:12px;color:#94a3b8">Protected</span>'}
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function filterUser() {
+    const q = document.getElementById('cariUser').value.toLowerCase();
+    renderTabel(semuaUser.filter(u => u.nama.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)));
+  }
+
+  async function toggleUser(id) {
+    const res = await fetch(`/api/users/${id}/toggle`, {
+      method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (res.ok) await loadUser();
+    else { const e = await res.json(); alert(e.error); }
+  }
+
+  async function gantiRole(id, role) {
+    const res = await fetch(`/api/users/${id}/role`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ role })
+    });
+    if (res.ok) await loadUser();
+    else { const e = await res.json(); alert(e.error); }
+  }
+
+  async function hapusUser(id, nama) {
+    if (!confirm(`Hapus user "${nama}"? Tindakan ini tidak bisa dibatalkan!`)) return;
+    const res = await fetch(`/api/users/${id}`, {
+      method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (res.ok) await loadUser();
+    else { const e = await res.json(); alert(e.error); }
+  }
+
+  function keluar() {
+    localStorage.removeItem('token'); localStorage.removeItem('user');
+    window.location.href = 'index.html';
+  }
+
+  loadUser();
+</script>
+</body>
+</html>

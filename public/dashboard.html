@@ -289,6 +289,12 @@
     <a href="laporan.html" class="nav-item">
       <span class="nav-icon">📊</span><span>Laporan</span>
     </a>
+    <div id="menuAdmin" style="display:none">
+      <div class="nav-section">Admin</div>
+      <a href="admin.html" class="nav-item">
+        <span class="nav-icon">👥</span><span>Kelola User</span>
+      </a>
+    </div>
   </nav>
   <div class="sidebar-footer">
     <div class="user-avatar" id="avatarSidebar">K</div>
@@ -484,6 +490,10 @@
     document.getElementById('welcomeNama').textContent  = 'Halo, ' + nama.split(' ')[0] + '! 👋';
   }
   tampilUser();
+  // Tampilkan menu admin kalau role admin
+  if (user.role === 'admin') {
+    document.getElementById('menuAdmin').style.display = 'block';
+  }
 
   // Tanggal
   const now = new Date();
@@ -570,6 +580,10 @@
       localStorage.setItem('user', JSON.stringify(hasil.user));
       user = hasil.user;
       tampilUser();
+  // Tampilkan menu admin kalau role admin
+  if (user.role === 'admin') {
+    document.getElementById('menuAdmin').style.display = 'block';
+  }
       okEl.textContent = '✅ Profil berhasil diupdate!'; okEl.style.display = 'block';
       setTimeout(tutupModal, 1500);
     } catch {
