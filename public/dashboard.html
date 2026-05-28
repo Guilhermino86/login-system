@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard - KasirKu</title>
+  <title>Dashboard - Skinthesia</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <style>
@@ -319,6 +319,15 @@
     .info-v { font-size: 13px; font-weight: 600; color: var(--text); }
     .info-v.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
 
+    /* Badge role */
+    .role-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 12px; font-weight: 700;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .role-admin { background: #fef3c7; color: #92400e; }
+    .role-kasir { background: var(--accent-light); color: var(--accent); }
+
     .profil-btns { display: flex; gap: 8px; margin-top: 14px; }
     .btn-edit {
       flex: 1; padding: 10px 8px; border-radius: 8px;
@@ -415,7 +424,8 @@
   <div class="sidebar-brand">
     <div class="brand-icon"><i class="ti ti-shopping-cart"></i></div>
     <div>
-      <div class="brand-name">KasirKu</div>
+      <!-- ✅ FIX: Nama brand disamakan jadi Skinthesia -->
+      <div class="brand-name">Skinthesia</div>
       <div class="brand-sub">Point of Sale</div>
     </div>
   </div>
@@ -440,6 +450,7 @@
       <i class="ti ti-chart-bar"></i><span>Laporan</span>
     </a>
 
+    <!-- Menu admin hanya muncul jika role = admin -->
     <div id="menuAdmin" style="display:none">
       <div class="nav-label">Admin</div>
       <a href="admin.html" class="nav-item">
@@ -573,7 +584,8 @@
             </div>
             <div class="info-row">
               <span class="info-k">Role</span>
-              <span class="info-v">Kasir</span>
+              <!-- ✅ FIX: Role ditampilkan dinamis sesuai data user -->
+              <span class="info-v" id="profilRole">-</span>
             </div>
           </div>
           <div class="profil-btns">
@@ -639,25 +651,41 @@
 <script>
   const token = localStorage.getItem('token');
   let user = JSON.parse(localStorage.getItem('user') || '{}');
-  if (!token) window.location.href = 'index.html';
+
+  // ✅ FIX UTAMA: Hanya cek token, TIDAK cek role.
+  // Semua user yang sudah login (kasir maupun admin) boleh akses dashboard.
+  if (!token) {
+    window.location.href = 'index.html';
+  }
 
   function tampilUser() {
     const nama  = user.nama  || '-';
     const email = user.email || '-';
+    const role  = user.role  || 'kasir';
+
     document.getElementById('namaSidebar').textContent  = nama;
     document.getElementById('emailSidebar').textContent = email;
     document.getElementById('avatarSidebar').textContent = nama[0].toUpperCase();
     document.getElementById('profilNama').textContent   = nama;
     document.getElementById('profilEmail').textContent  = email;
-    document.getElementById('profilId').textContent     = '#' + user.id;
+    document.getElementById('profilId').textContent     = '#' + (user.id || '-');
     document.getElementById('profilAvatar').textContent = nama[0].toUpperCase();
     document.getElementById('welcomeNama').textContent  = 'Halo, ' + nama.split(' ')[0] + '! 👋';
+
+    // Tampilkan role dengan badge berwarna
+    const roleEl = document.getElementById('profilRole');
+    if (role === 'admin') {
+      roleEl.innerHTML = '<span class="role-badge role-admin">⭐ Admin</span>';
+    } else {
+      roleEl.innerHTML = '<span class="role-badge role-kasir">Kasir</span>';
+    }
+
+    // Menu admin hanya tampil untuk admin
+    if (role === 'admin') {
+      document.getElementById('menuAdmin').style.display = 'block';
+    }
   }
   tampilUser();
-
-  if (user.role === 'admin') {
-    document.getElementById('menuAdmin').style.display = 'block';
-  }
 
   const now = new Date();
   document.getElementById('tanggalHari').textContent = now.toLocaleDateString('id-ID', {
@@ -671,49 +699,59 @@
   async function loadData() {
     try {
       const resHari = await fetch('/api/laporan?periode=hari', { headers: { 'Authorization': 'Bearer ' + token } });
-      const dataHari = await resHari.json();
-      document.getElementById('statPendapatan').textContent = formatRupiah(dataHari.totalPendapatan);
-      document.getElementById('statTrx').textContent        = dataHari.jumlahTrx;
+      // ✅ FIX: Jika 401, jangan redirect — mungkin endpoint ini butuh role admin.
+      // Tampilkan 0 saja, jangan paksa logout.
+      if (resHari.ok) {
+        const dataHari = await resHari.json();
+        document.getElementById('statPendapatan').textContent = formatUSD(dataHari.totalPendapatan);
+        document.getElementById('statTrx').textContent        = dataHari.jumlahTrx;
+      }
 
       const resBulan = await fetch('/api/laporan?periode=bulan', { headers: { 'Authorization': 'Bearer ' + token } });
-      const dataBulan = await resBulan.json();
-      document.getElementById('statBulan').textContent = formatRupiah(dataBulan.totalPendapatan);
+      if (resBulan.ok) {
+        const dataBulan = await resBulan.json();
+        document.getElementById('statBulan').textContent = formatUSD(dataBulan.totalPendapatan);
+      }
 
       const resProduk = await fetch('/api/produk', { headers: { 'Authorization': 'Bearer ' + token } });
-      const produk = await resProduk.json();
-      document.getElementById('statProduk').textContent = produk.length;
+      if (resProduk.ok) {
+        const produk = await resProduk.json();
+        document.getElementById('statProduk').textContent = produk.length;
+      }
 
       const resTrx = await fetch('/api/transaksi', { headers: { 'Authorization': 'Bearer ' + token } });
-      const trxList = await resTrx.json();
-      const last5 = [...trxList].reverse().slice(0, 5);
+      if (resTrx.ok) {
+        const trxList = await resTrx.json();
+        const last5 = [...trxList].reverse().slice(0, 5);
 
-      const el = document.getElementById('aktivitasList');
-      if (!last5.length) {
-        el.innerHTML = `
-          <div class="empty-state">
-            <i class="ti ti-receipt-off"></i>
-            Belum ada transaksi. <a href="kasir.html">Mulai transaksi</a>
-          </div>`;
-      } else {
-        el.innerHTML = last5.map(t => `
-          <div class="trx-item">
-            <div class="trx-ic"><i class="ti ti-receipt"></i></div>
-            <div class="trx-body">
-              <div class="trx-id">${t.noTransaksi}</div>
-              <div class="trx-meta">${new Date(t.waktu).toLocaleString('id-ID')} · ${t.kasir} · ${t.items.length} item</div>
+        const el = document.getElementById('aktivitasList');
+        if (!last5.length) {
+          el.innerHTML = `
+            <div class="empty-state">
+              <i class="ti ti-receipt-off"></i>
+              Belum ada transaksi. <a href="kasir.html">Mulai transaksi</a>
+            </div>`;
+        } else {
+          el.innerHTML = last5.map(t => `
+            <div class="trx-item">
+              <div class="trx-ic"><i class="ti ti-receipt"></i></div>
+              <div class="trx-body">
+                <div class="trx-id">${t.noTransaksi}</div>
+                <div class="trx-meta">${new Date(t.waktu).toLocaleString('id-ID')} · ${t.kasir} · ${t.items.length} item</div>
+              </div>
+              <div class="trx-val">${formatUSD(t.total)}</div>
             </div>
-            <div class="trx-val">${formatRupiah(t.total)}</div>
-          </div>
-        `).join('');
+          `).join('');
+        }
       }
     } catch(e) {
-      console.error(e);
+      console.error('Error load data dashboard:', e);
     }
   }
 
   function bukaEditProfil() {
-    document.getElementById('editNama').value  = user.nama;
-    document.getElementById('editEmail').value = user.email;
+    document.getElementById('editNama').value  = user.nama  || '';
+    document.getElementById('editEmail').value = user.email || '';
     document.getElementById('editError').style.display  = 'none';
     document.getElementById('editSukses').style.display = 'none';
     document.getElementById('modalEdit').style.display  = 'flex';
@@ -743,7 +781,6 @@
       localStorage.setItem('user', JSON.stringify(hasil.user));
       user = hasil.user;
       tampilUser();
-      if (user.role === 'admin') document.getElementById('menuAdmin').style.display = 'block';
       okEl.textContent = 'Profil berhasil diupdate!';
       okEl.style.display = 'block';
       setTimeout(tutupModal, 1500);
@@ -760,7 +797,7 @@
     window.location.href = 'index.html';
   }
 
-  function formatRupiah(n) {
+  function formatUSD(n) {
     return '$ ' + Number(n || 0).toLocaleString('en-US');
   }
 
