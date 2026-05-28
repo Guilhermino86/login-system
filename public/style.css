@@ -1,174 +1,267 @@
 /* =============================================
-   STYLE.CSS - Tampilan Semua Halaman
+   STYLE.CSS - KasirKu Global Styles
    ============================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
 
-/* --- Reset & Base --- */
+/* ── Reset ── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* ── Variabel Global ── */
 :root {
-  --biru:     #2563eb;
-  --biru-tua: #1d4ed8;
-  --hijau:    #16a34a;
-  --merah:    #dc2626;
-  --abu:      #6b7280;
-  --abu-muda: #f3f4f6;
-  --putih:    #ffffff;
-  --hitam:    #111827;
-  --border:   #e5e7eb;
-  --shadow:   0 4px 24px rgba(0,0,0,0.08);
+  --biru:        #2563eb;
+  --biru-tua:    #1d4ed8;
+  --biru-muda:   #eff6ff;
+  --hijau:       #16a34a;
+  --hijau-tua:   #15803d;
+  --hijau-muda:  #f0fdf4;
+  --merah:       #dc2626;
+  --merah-muda:  #fef2f2;
+  --kuning:      #d97706;
+  --kuning-muda: #fffbeb;
+  --ungu:        #7c3aed;
+  --abu:         #64748b;
+  --abu-muda:    #f8fafc;
+  --abu-border:  #e2e8f0;
+  --putih:       #ffffff;
+  --hitam:       #0f172a;
+  --teks-2:      #64748b;
+  --teks-3:      #94a3b8;
+  --border:      #e2e8f0;
+  --shadow-sm:   0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow:      0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg:   0 16px 48px rgba(0,0,0,0.12);
+  --radius-sm:   8px;
+  --radius:      12px;
+  --radius-lg:   16px;
+  --radius-xl:   20px;
 }
 
+/* ── Base Body (halaman auth: login, register, dll) ── */
 body {
-  font-family: 'Sora', sans-serif;
-  background: #f0f4ff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #f1f5f9;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 24px;
+  color: var(--hitam);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* --- Kartu Utama --- */
+/* ── Kartu Utama (login, register) ── */
 .kartu {
   background: var(--putih);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
-  padding: 40px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 40px 36px;
   width: 100%;
   max-width: 420px;
-  animation: masuk 0.4s ease;
+  animation: masuk 0.3s ease;
+  border: 1px solid var(--border);
 }
 
 @keyframes masuk {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(18px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Logo / Header --- */
+/* ── Logo / Header ── */
 .logo {
   text-align: center;
   margin-bottom: 32px;
 }
 
 .logo-ikon {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  border-radius: 16px;
+  width: 54px;
+  height: 54px;
+  background: #16a34a;
+  border-radius: var(--radius);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 16px;
-  font-size: 24px;
+  font-size: 22px;
+  color: white;
 }
 
 .logo h1 {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--hitam);
+  letter-spacing: -0.3px;
 }
 
 .logo p {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--abu);
   margin-top: 4px;
+  font-weight: 500;
 }
 
-/* --- Form Group --- */
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+/* ── Form Group ── */
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--hitam);
-  margin-bottom: 8px;
+  margin-bottom: 7px;
+  letter-spacing: 0.01em;
 }
 
-.form-group input {
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  font-family: 'Sora', sans-serif;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px;
   color: var(--hitam);
+  background: var(--putih);
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
-.form-group input:focus {
-  border-color: var(--biru);
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--hijau);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
 }
 
-/* --- Tombol --- */
+.form-group input::placeholder {
+  color: var(--teks-3);
+}
+
+/* ── Tombol ── */
 .btn {
   width: 100%;
-  padding: 14px;
+  padding: 12px 16px;
   border: none;
-  border-radius: 10px;
-  font-family: 'Sora', sans-serif;
-  font-size: 15px;
+  border-radius: var(--radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 8px;
+  transition: all 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
 }
 
 .btn-utama {
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  background: #16a34a;
   color: white;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
 }
 
 .btn-utama:hover {
+  background: #15803d;
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.35);
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(37,99,235,0.35);
 }
 
 .btn-utama:active {
   transform: translateY(0);
+  box-shadow: none;
 }
 
 .btn-utama:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
-.btn-keluar {
+.btn-sekunder {
   background: var(--abu-muda);
   color: var(--hitam);
-  margin-top: 12px;
+  border: 1px solid var(--border);
 }
 
-.btn-keluar:hover {
+.btn-sekunder:hover {
   background: var(--border);
 }
 
-/* --- Pesan Alert --- */
-.alert {
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 500;
-  margin-bottom: 16px;
-  display: none;
+.btn-keluar {
+  background: var(--merah-muda);
+  color: var(--merah);
+  border: 1px solid #fecaca;
+  margin-top: 10px;
 }
 
-.alert.tampil { display: block; }
+.btn-keluar:hover {
+  background: var(--merah);
+  color: white;
+  border-color: var(--merah);
+}
 
-.alert-error   { background: #fef2f2; color: var(--merah); border: 1px solid #fecaca; }
-.alert-sukses  { background: #f0fdf4; color: var(--hijau); border: 1px solid #bbf7d0; }
+.btn-biru {
+  background: var(--biru);
+  color: white;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
 
-/* --- Link --- */
+.btn-biru:hover {
+  background: var(--biru-tua);
+  transform: translateY(-1px);
+}
+
+/* ── Alert / Pesan ── */
+.alert {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 14px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.alert.tampil {
+  display: flex;
+}
+
+.alert-error {
+  background: var(--merah-muda);
+  color: var(--merah);
+  border: 1px solid #fecaca;
+}
+
+.alert-sukses {
+  background: var(--hijau-muda);
+  color: var(--hijau);
+  border: 1px solid #bbf7d0;
+}
+
+.alert-info {
+  background: var(--biru-muda);
+  color: var(--biru);
+  border: 1px solid #bfdbfe;
+}
+
+/* ── Link Bawah ── */
 .link-bawah {
   text-align: center;
   margin-top: 20px;
@@ -177,69 +270,102 @@ body {
 }
 
 .link-bawah a {
-  color: var(--biru);
+  color: var(--hijau);
   text-decoration: none;
   font-weight: 600;
 }
 
-.link-bawah a:hover { text-decoration: underline; }
-
-/* --- Dashboard --- */
-.dashboard {
-  max-width: 520px;
+.link-bawah a:hover {
+  color: var(--hijau-tua);
+  text-decoration: underline;
 }
 
-.selamat-datang {
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  color: white;
-  padding: 28px;
-  border-radius: 14px;
-  margin-bottom: 24px;
+/* ── Badge / Pill ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
 }
 
-.selamat-datang h2 {
-  font-size: 20px;
-  margin-bottom: 4px;
-}
+.badge-hijau  { background: var(--hijau-muda);  color: var(--hijau); }
+.badge-biru   { background: var(--biru-muda);   color: var(--biru); }
+.badge-merah  { background: var(--merah-muda);  color: var(--merah); }
+.badge-kuning { background: var(--kuning-muda); color: var(--kuning); }
+.badge-abu    { background: var(--abu-muda);    color: var(--abu); }
 
-.selamat-datang p {
-  font-size: 13px;
-  opacity: 0.85;
-}
-
+/* ── Info Card (dashboard lama) ── */
 .info-card {
   background: var(--abu-muda);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 14px;
 }
 
 .info-card h3 {
-  font-size: 13px;
+  font-size: 11.5px;
   color: var(--abu);
-  font-weight: 500;
-  margin-bottom: 8px;
+  font-weight: 600;
+  margin-bottom: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
 .info-card p {
   font-size: 15px;
   color: var(--hitam);
-  font-weight: 600;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
 }
 
-/* --- Loading Spinner --- */
-.loading { display: inline-block; }
+/* ── Selamat Datang Banner ── */
+.selamat-datang {
+  background: #0f172a;
+  color: white;
+  padding: 24px 26px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.selamat-datang::before {
+  content: '';
+  position: absolute;
+  right: -20px; top: -30px;
+  width: 160px; height: 160px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 50%;
+}
+
+.selamat-datang h2 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  position: relative;
+}
+
+.selamat-datang p {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 5px;
+  position: relative;
+}
+
+/* ── Loading Spinner ── */
 .loading::after {
   content: '';
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255,255,255,0.5);
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255,255,255,0.4);
   border-top-color: white;
   border-radius: 50%;
-  animation: putar 0.6s linear infinite;
+  animation: putar 0.55s linear infinite;
   margin-left: 8px;
   vertical-align: middle;
 }
@@ -247,3 +373,97 @@ body {
 @keyframes putar {
   to { transform: rotate(360deg); }
 }
+
+/* ── Tabel ── */
+.tabel-wrap {
+  overflow-x: auto;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+thead tr {
+  background: var(--abu-muda);
+  border-bottom: 1px solid var(--border);
+}
+
+thead th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--abu);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--abu-muda); }
+
+tbody td {
+  padding: 12px 16px;
+  color: var(--hitam);
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+.td-mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+}
+
+/* ── Empty State ── */
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--teks-3);
+  font-size: 13px;
+}
+
+.empty-state i {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 10px;
+  color: var(--border);
+}
+
+.empty-state a {
+  color: var(--hijau);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ── Utility ── */
+.mt-4  { margin-top: 4px; }
+.mt-8  { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-4  { margin-bottom: 4px; }
+.mb-8  { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+
+.teks-abu    { color: var(--abu); }
+.teks-hijau  { color: var(--hijau); }
+.teks-merah  { color: var(--merah); }
+.teks-biru   { color: var(--biru); }
+.font-mono   { font-family: 'JetBrains Mono', monospace; }
+.font-bold   { font-weight: 700; }
+.text-center { text-align: center; }
+.text-small  { font-size: 12px; }
+.w-full      { width: 100%; }
+.flex        { display: flex; }
+.items-center { align-items: center; }
+.gap-8       { gap: 8px; }
+.gap-12      { gap: 12px; }
