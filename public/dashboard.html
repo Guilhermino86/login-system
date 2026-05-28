@@ -45,38 +45,29 @@
       width: var(--sidebar-w);
       background: var(--sidebar-bg);
       min-height: 100vh;
-      position: fixed;
-      top: 0; left: 0;
-      display: flex;
-      flex-direction: column;
+      position: fixed; top: 0; left: 0;
+      display: flex; flex-direction: column;
       z-index: 100;
       border-right: 1px solid rgba(255,255,255,0.04);
     }
-
     .sidebar-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display: flex; align-items: center; gap: 12px;
       padding: 22px 18px 18px;
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
     .brand-icon {
       width: 38px; height: 38px;
-      background: var(--accent);
-      border-radius: 10px;
+      background: var(--accent); border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 18px;
-      flex-shrink: 0;
+      color: white; font-size: 18px; flex-shrink: 0;
     }
     .brand-name { font-size: 16px; font-weight: 800; color: #f1f5f9; letter-spacing: -0.3px; }
     .brand-sub  { font-size: 10px; color: #475569; font-weight: 500; margin-top: 1px; text-transform: uppercase; letter-spacing: 0.06em; }
 
     .sidebar-nav { flex: 1; padding: 12px 10px; display: flex; flex-direction: column; gap: 1px; overflow-y: auto; }
     .nav-label {
-      font-size: 10px; font-weight: 700;
-      color: #334155;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
+      font-size: 10px; font-weight: 700; color: #334155;
+      text-transform: uppercase; letter-spacing: 0.08em;
       padding: 14px 10px 6px;
     }
     .nav-item {
@@ -88,21 +79,15 @@
     }
     .nav-item i { font-size: 17px; flex-shrink: 0; }
     .nav-item:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
-    .nav-item.aktif {
-      background: rgba(22, 163, 74, 0.15);
-      color: #4ade80;
-    }
+    .nav-item.aktif { background: rgba(22,163,74,0.15); color: #4ade80; }
     .nav-item.aktif i { color: #4ade80; }
 
     .sidebar-footer {
-      padding: 12px;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 12px; border-top: 1px solid rgba(255,255,255,0.06);
       display: flex; align-items: center; gap: 10px;
     }
     .s-avatar {
-      width: 36px; height: 36px;
-      background: var(--accent);
-      border-radius: 50%;
+      width: 36px; height: 36px; background: var(--accent); border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 14px; color: white; flex-shrink: 0;
     }
@@ -123,64 +108,64 @@
 
     /* ── TOPBAR ── */
     .topbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 28px;
-      height: 64px;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 28px; height: 64px;
       display: flex; align-items: center; justify-content: space-between;
       position: sticky; top: 0; z-index: 50;
     }
     .topbar-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
     .topbar-sub   { font-size: 12px; color: var(--text-2); margin-top: 2px; }
 
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+
     .btn-kasir {
       display: inline-flex; align-items: center; gap: 7px;
-      padding: 9px 18px;
-      background: var(--accent);
+      padding: 9px 18px; background: var(--accent);
       color: white; border: none; border-radius: 9px;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 13.5px; font-weight: 600;
-      cursor: pointer; text-decoration: none;
-      transition: all 0.12s;
+      cursor: pointer; text-decoration: none; transition: all 0.12s;
     }
     .btn-kasir:hover { background: var(--accent-dark); }
     .btn-kasir i { font-size: 16px; }
 
+    /* Tombol Tambah User di topbar — hanya admin */
+    .btn-adduser {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 16px;
+      background: var(--sidebar-bg); color: white;
+      border: none; border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: all 0.12s;
+    }
+    .btn-adduser:hover { background: #1e293b; }
+    .btn-adduser i { font-size: 15px; }
+
     /* ── CONTENT ── */
     .content { padding: 24px 28px; flex: 1; }
 
-    /* ── WELCOME BANNER ── */
+    /* ── BANNER ── */
     .banner {
-      background: var(--sidebar-bg);
-      border-radius: 16px;
+      background: var(--sidebar-bg); border-radius: 16px;
       padding: 24px 28px;
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 20px;
-      overflow: hidden;
-      position: relative;
+      margin-bottom: 20px; overflow: hidden; position: relative;
     }
     .banner::before {
-      content: '';
-      position: absolute; right: -20px; top: -30px;
-      width: 180px; height: 180px;
-      border-radius: 50%;
+      content: ''; position: absolute; right: -20px; top: -30px;
+      width: 180px; height: 180px; border-radius: 50%;
       background: rgba(255,255,255,0.03);
     }
     .banner::after {
-      content: '';
-      position: absolute; right: 90px; bottom: -50px;
-      width: 120px; height: 120px;
-      border-radius: 50%;
+      content: ''; position: absolute; right: 90px; bottom: -50px;
+      width: 120px; height: 120px; border-radius: 50%;
       background: rgba(255,255,255,0.03);
     }
-    .banner-left h2 {
-      font-size: 22px; font-weight: 800;
-      color: #f1f5f9; letter-spacing: -0.4px;
-    }
-    .banner-left p { font-size: 13px; color: #64748b; margin-top: 5px; }
+    .banner-left h2 { font-size: 22px; font-weight: 800; color: #f1f5f9; letter-spacing: -0.4px; }
+    .banner-left p  { font-size: 13px; color: #64748b; margin-top: 5px; }
     .banner-icon {
-      width: 56px; height: 56px;
-      background: rgba(22,163,74,0.15);
+      width: 56px; height: 56px; background: rgba(22,163,74,0.15);
       border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
       color: #4ade80; font-size: 26px;
@@ -189,145 +174,72 @@
 
     /* ── STAT CARDS ── */
     .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 14px; margin-bottom: 20px;
     }
     .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px;
       display: flex; flex-direction: column; gap: 14px;
       transition: box-shadow 0.15s, transform 0.15s;
     }
     .stat-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); transform: translateY(-1px); }
-
     .stat-top { display: flex; align-items: center; justify-content: space-between; }
-    .stat-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 19px;
-    }
+    .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 19px; }
     .ic-green  { background: var(--accent-light); color: var(--accent); }
     .ic-blue   { background: var(--blue-light);   color: var(--blue); }
     .ic-amber  { background: var(--amber-light);  color: var(--amber); }
     .ic-purple { background: var(--purple-light); color: var(--purple); }
-
-    .stat-pill {
-      font-size: 11px; font-weight: 600;
-      padding: 3px 9px; border-radius: 20px;
-    }
-    .pill-green  { background: var(--accent-light); color: var(--accent); }
-    .pill-blue   { background: var(--blue-light);   color: var(--blue); }
-
+    .stat-pill { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+    .pill-green { background: var(--accent-light); color: var(--accent); }
+    .pill-blue  { background: var(--blue-light);   color: var(--blue); }
     .stat-value { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; font-family: 'JetBrains Mono', monospace; color: var(--text); }
     .stat-label { font-size: 12.5px; color: var(--text-2); font-weight: 500; }
 
     /* ── BOTTOM GRID ── */
-    .bottom-grid {
-      display: grid;
-      grid-template-columns: 1fr 288px;
-      gap: 16px;
-      align-items: start;
-    }
+    .bottom-grid { display: grid; grid-template-columns: 1fr 288px; gap: 16px; align-items: start; }
 
     /* ── CARD ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px 22px;
-    }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; }
     .card + .card { margin-top: 16px; }
-    .card-hdr {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 16px;
-    }
+    .card-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
     .card-title { font-size: 14px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
     .card-title i { font-size: 16px; color: var(--text-2); }
     .card-sub  { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
-    .card-link {
-      font-size: 12.5px; color: var(--accent); font-weight: 600;
-      text-decoration: none; display: flex; align-items: center; gap: 4px;
-    }
+    .card-link { font-size: 12.5px; color: var(--accent); font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px; }
     .card-link:hover { color: var(--accent-dark); text-decoration: underline; }
     .card-link i { font-size: 13px; }
 
-    /* ── TRANSAKSI ── */
+    /* ── TRANSAKSI LIST ── */
     .trx-list { display: flex; flex-direction: column; }
-    .trx-item {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .trx-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
     .trx-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .trx-ic {
-      width: 36px; height: 36px;
-      background: var(--accent-light);
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--accent); font-size: 16px; flex-shrink: 0;
-    }
+    .trx-ic { width: 36px; height: 36px; background: var(--accent-light); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 16px; flex-shrink: 0; }
     .trx-body { flex: 1; min-width: 0; }
     .trx-id   { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .trx-meta { font-size: 11.5px; color: var(--text-2); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .trx-val  { font-size: 13.5px; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--accent); flex-shrink: 0; }
 
-    .empty-state {
-      text-align: center; padding: 28px 16px;
-      color: var(--text-3); font-size: 13px;
-      border: 1.5px dashed var(--border); border-radius: 10px;
-    }
+    .empty-state { text-align: center; padding: 28px 16px; color: var(--text-3); font-size: 13px; border: 1.5px dashed var(--border); border-radius: 10px; }
     .empty-state i { font-size: 28px; display: block; margin-bottom: 8px; color: var(--border); }
     .empty-state a { color: var(--accent); font-weight: 600; text-decoration: none; }
 
-    /* ── PROFIL CARD ── */
-    .profil-top {
-      display: flex; flex-direction: column; align-items: center;
-      text-align: center; padding-bottom: 16px;
-      border-bottom: 1px solid var(--border); margin-bottom: 14px;
-    }
-    .profil-avatar {
-      width: 58px; height: 58px;
-      background: var(--accent);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; font-weight: 800; color: white;
-      margin-bottom: 12px;
-    }
+    /* ── PROFIL ── */
+    .profil-top { display: flex; flex-direction: column; align-items: center; text-align: center; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+    .profil-avatar { width: 58px; height: 58px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: white; margin-bottom: 12px; }
     .profil-name  { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.2px; }
     .profil-email { font-size: 12px; color: var(--text-2); margin-top: 3px; }
-    .profil-status {
-      display: inline-flex; align-items: center; gap: 5px;
-      margin-top: 8px; font-size: 11.5px; font-weight: 600;
-      color: var(--accent); background: var(--accent-light);
-      padding: 4px 11px; border-radius: 20px;
-    }
+    .profil-status { display: inline-flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 11.5px; font-weight: 600; color: var(--accent); background: var(--accent-light); padding: 4px 11px; border-radius: 20px; }
     .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-
     .info-rows { display: flex; flex-direction: column; gap: 8px; }
-    .info-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 12px;
-      background: var(--bg);
-      border-radius: 8px;
-    }
+    .info-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg); border-radius: 8px; }
     .info-k { font-size: 11.5px; font-weight: 600; color: var(--text-2); }
     .info-v { font-size: 13px; font-weight: 600; color: var(--text); }
     .info-v.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
-
-    /* Badge role */
-    .role-badge {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: 12px; font-weight: 700;
-      padding: 3px 10px; border-radius: 20px;
-    }
-    .role-admin { background: #fef3c7; color: #92400e; }
-    .role-kasir { background: var(--accent-light); color: var(--accent); }
-
+    .role-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .role-admin   { background: #fef3c7; color: #92400e; }
+    .role-manager { background: #f3e8ff; color: #7c3aed; }
+    .role-kasir   { background: var(--accent-light); color: var(--accent); }
     .profil-btns { display: flex; gap: 8px; margin-top: 14px; }
     .btn-edit {
       flex: 1; padding: 10px 8px; border-radius: 8px;
@@ -349,9 +261,7 @@
     .btn-keluar:hover { background: var(--red); color: white; }
 
     /* ── QUICK ACCESS ── */
-    .quick-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
-    }
+    .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .quick-item {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 6px; padding: 14px 8px;
@@ -364,54 +274,36 @@
     .quick-item:hover { background: var(--accent-light); border-color: var(--accent-mid); color: var(--accent-dark); }
     .quick-item:hover i { color: var(--accent-dark); }
 
-    /* ── MODAL ── */
+    /* Quick item khusus admin — warna berbeda */
+    .quick-item.admin-only {
+      border-color: #e9d5ff;
+      background: #faf5ff;
+    }
+    .quick-item.admin-only i { color: var(--purple); }
+    .quick-item.admin-only:hover { background: #f3e8ff; border-color: #c4b5fd; color: var(--purple); }
+    .quick-item.admin-only:hover i { color: var(--purple); }
+
+    /* ── MODAL EDIT PROFIL ── */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(2px);
+      background: rgba(15,23,42,0.55); backdrop-filter: blur(2px);
       display: flex; align-items: center; justify-content: center;
       z-index: 200; padding: 20px;
     }
-    .modal-box {
-      background: white; border-radius: 18px; padding: 26px;
-      width: 100%; max-width: 420px;
-      animation: slideUp 0.18s ease;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.18);
-    }
+    .modal-box { background: white; border-radius: 18px; padding: 26px; width: 100%; max-width: 420px; animation: slideUp 0.18s ease; box-shadow: 0 24px 64px rgba(0,0,0,0.18); }
     @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     .modal-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .modal-hdr h2 { font-size: 16px; font-weight: 700; }
-    .btn-close {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 7px; width: 30px; height: 30px;
-      cursor: pointer; font-size: 13px; color: var(--text-2);
-      display: flex; align-items: center; justify-content: center;
-    }
+    .btn-close { background: var(--bg); border: 1px solid var(--border); border-radius: 7px; width: 30px; height: 30px; cursor: pointer; font-size: 13px; color: var(--text-2); display: flex; align-items: center; justify-content: center; }
     .btn-close:hover { background: #fee2e2; color: var(--red); border-color: #fecaca; }
     .form-group { margin-bottom: 14px; }
     .form-group label { display: block; font-size: 12.5px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
-    .form-group input {
-      width: 100%; padding: 10px 13px;
-      border: 1.5px solid var(--border); border-radius: 9px;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px;
-      outline: none; transition: border-color 0.12s; color: var(--text);
-      background: var(--surface);
-    }
+    .form-group input { width: 100%; padding: 10px 13px; border: 1.5px solid var(--border); border-radius: 9px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; outline: none; transition: border-color 0.12s; color: var(--text); background: var(--surface); }
     .form-group input:focus { border-color: var(--accent); }
     .modal-btns { display: flex; gap: 8px; margin-top: 4px; }
-    .btn-cancel {
-      flex: 1; padding: 11px; background: var(--bg);
-      border: 1px solid var(--border); border-radius: 9px;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 600;
-      cursor: pointer; color: var(--text-2);
-    }
+    .btn-cancel { flex: 1; padding: 11px; background: var(--bg); border: 1px solid var(--border); border-radius: 9px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--text-2); }
     .btn-cancel:hover { background: var(--border); }
-    .btn-save {
-      flex: 2; padding: 11px; background: var(--accent); color: white;
-      border: none; border-radius: 9px;
-      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 700;
-      cursor: pointer; transition: background 0.12s;
-    }
+    .btn-save { flex: 2; padding: 11px; background: var(--accent); color: white; border: none; border-radius: 9px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: background 0.12s; }
     .btn-save:hover { background: var(--accent-dark); }
     .alert-err { background: #fef2f2; color: var(--red); border-radius: 8px; padding: 9px 13px; font-size: 13px; font-weight: 500; margin-bottom: 12px; display: none; border: 1px solid #fecaca; }
     .alert-ok  { background: var(--accent-light); color: var(--accent); border-radius: 8px; padding: 9px 13px; font-size: 13px; font-weight: 500; margin-bottom: 12px; display: none; border: 1px solid #bbf7d0; }
@@ -424,41 +316,23 @@
   <div class="sidebar-brand">
     <div class="brand-icon"><i class="ti ti-shopping-cart"></i></div>
     <div>
-      <!-- ✅ FIX: Nama brand disamakan jadi Skinthesia -->
       <div class="brand-name">Skinthesia</div>
       <div class="brand-sub">Point of Sale</div>
     </div>
   </div>
-
   <nav class="sidebar-nav">
     <div class="nav-label">Menu Utama</div>
-    <a href="dashboard.html" class="nav-item aktif">
-      <i class="ti ti-layout-dashboard"></i><span>Dashboard</span>
-    </a>
-    <a href="kasir.html" class="nav-item">
-      <i class="ti ti-receipt"></i><span>Kasir / Transaksi</span>
-    </a>
-
+    <a href="dashboard.html" class="nav-item aktif"><i class="ti ti-layout-dashboard"></i><span>Dashboard</span></a>
+    <a href="kasir.html"     class="nav-item"><i class="ti ti-receipt"></i><span>Kasir / Transaksi</span></a>
     <div class="nav-label">Manajemen</div>
-    <a href="produk.html" class="nav-item">
-      <i class="ti ti-package"></i><span>Produk</span>
-    </a>
-    <a href="riwayat.html" class="nav-item">
-      <i class="ti ti-clipboard-list"></i><span>Riwayat</span>
-    </a>
-    <a href="laporan.html" class="nav-item">
-      <i class="ti ti-chart-bar"></i><span>Laporan</span>
-    </a>
-
-    <!-- Menu admin hanya muncul jika role = admin -->
+    <a href="produk.html"    class="nav-item"><i class="ti ti-package"></i><span>Produk</span></a>
+    <a href="riwayat.html"   class="nav-item"><i class="ti ti-clipboard-list"></i><span>Riwayat</span></a>
+    <a href="laporan.html"   class="nav-item"><i class="ti ti-chart-bar"></i><span>Laporan</span></a>
     <div id="menuAdmin" style="display:none">
       <div class="nav-label">Admin</div>
-      <a href="admin.html" class="nav-item">
-        <i class="ti ti-users"></i><span>Kelola User</span>
-      </a>
+      <a href="admin.html" class="nav-item"><i class="ti ti-users"></i><span>Kelola User</span></a>
     </div>
   </nav>
-
   <div class="sidebar-footer">
     <div class="s-avatar" id="avatarSidebar">K</div>
     <div class="s-user-info">
@@ -473,21 +347,25 @@
 
 <!-- MAIN -->
 <main class="main">
-
-  <!-- TOPBAR -->
   <header class="topbar">
     <div>
       <div class="topbar-title">Dashboard</div>
       <div class="topbar-sub" id="tanggalHari">Selamat datang!</div>
     </div>
-    <a href="kasir.html" class="btn-kasir">
-      <i class="ti ti-receipt"></i> Buka Kasir
-    </a>
+    <div class="topbar-right">
+      <!-- Tombol Tambah User — hanya admin, disembunyikan dulu -->
+      <a href="admin.html" class="btn-adduser" id="btnKelolaUser" style="display:none">
+        <i class="ti ti-users"></i> Kelola User
+      </a>
+      <a href="kasir.html" class="btn-kasir">
+        <i class="ti ti-receipt"></i> Buka Kasir
+      </a>
+    </div>
   </header>
 
   <div class="content">
 
-    <!-- WELCOME BANNER -->
+    <!-- BANNER -->
     <div class="banner">
       <div class="banner-left">
         <h2 id="welcomeNama">Halo! 👋</h2>
@@ -543,7 +421,7 @@
     <!-- BOTTOM GRID -->
     <div class="bottom-grid">
 
-      <!-- KIRI -->
+      <!-- KIRI: Transaksi Terakhir -->
       <div>
         <div class="card">
           <div class="card-hdr">
@@ -556,13 +434,13 @@
           <div class="trx-list" id="aktivitasList">
             <div class="empty-state">
               <i class="ti ti-receipt-off"></i>
-              Belum ada transaksi
+              Belum ada transaksi. <a href="kasir.html">Mulai transaksi</a>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- KANAN -->
+      <!-- KANAN: Profil + Quick Access -->
       <div>
         <!-- PROFIL -->
         <div class="card">
@@ -573,9 +451,7 @@
             <div class="profil-avatar" id="profilAvatar">K</div>
             <div class="profil-name"  id="profilNama">-</div>
             <div class="profil-email" id="profilEmail">-</div>
-            <div class="profil-status">
-              <span class="status-dot"></span>Akun Aktif
-            </div>
+            <div class="profil-status"><span class="status-dot"></span>Akun Aktif</div>
           </div>
           <div class="info-rows">
             <div class="info-row">
@@ -584,7 +460,6 @@
             </div>
             <div class="info-row">
               <span class="info-k">Role</span>
-              <!-- ✅ FIX: Role ditampilkan dinamis sesuai data user -->
               <span class="info-v" id="profilRole">-</span>
             </div>
           </div>
@@ -603,7 +478,7 @@
           <div class="card-hdr">
             <div class="card-title"><i class="ti ti-bolt"></i>Akses Cepat</div>
           </div>
-          <div class="quick-grid">
+          <div class="quick-grid" id="quickGrid">
             <a href="kasir.html" class="quick-item">
               <i class="ti ti-receipt"></i>Kasir
             </a>
@@ -616,10 +491,11 @@
             <a href="laporan.html" class="quick-item">
               <i class="ti ti-chart-bar"></i>Laporan
             </a>
+            <!-- Tombol Kelola User & Tambah User — diisi JS jika admin -->
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 </main>
@@ -643,7 +519,7 @@
     </div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="tutupModal()">Batal</button>
-      <button class="btn-save" onclick="simpanProfil()">Simpan Perubahan</button>
+      <button class="btn-save"   onclick="simpanProfil()">Simpan Perubahan</button>
     </div>
   </div>
 </div>
@@ -652,78 +528,103 @@
   const token = localStorage.getItem('token');
   let user = JSON.parse(localStorage.getItem('user') || '{}');
 
-  // ✅ FIX UTAMA: Hanya cek token, TIDAK cek role.
-  // Semua user yang sudah login (kasir maupun admin) boleh akses dashboard.
-  if (!token) {
-    window.location.href = 'index.html';
-  }
+  if (!token) window.location.href = 'index.html';
 
+  /* ── TAMPIL DATA USER ── */
   function tampilUser() {
     const nama  = user.nama  || '-';
     const email = user.email || '-';
     const role  = user.role  || 'kasir';
 
+    // Sidebar
     document.getElementById('namaSidebar').textContent  = nama;
     document.getElementById('emailSidebar').textContent = email;
     document.getElementById('avatarSidebar').textContent = nama[0].toUpperCase();
+
+    // Profil card
     document.getElementById('profilNama').textContent   = nama;
     document.getElementById('profilEmail').textContent  = email;
     document.getElementById('profilId').textContent     = '#' + (user.id || '-');
     document.getElementById('profilAvatar').textContent = nama[0].toUpperCase();
     document.getElementById('welcomeNama').textContent  = 'Halo, ' + nama.split(' ')[0] + '! 👋';
 
-    // Tampilkan role dengan badge berwarna
+    // Badge role
     const roleEl = document.getElementById('profilRole');
     if (role === 'admin') {
       roleEl.innerHTML = '<span class="role-badge role-admin">⭐ Admin</span>';
+    } else if (role === 'manager') {
+      roleEl.innerHTML = '<span class="role-badge role-manager">🟣 Manager</span>';
     } else {
-      roleEl.innerHTML = '<span class="role-badge role-kasir">Kasir</span>';
+      roleEl.innerHTML = '<span class="role-badge role-kasir">🧾 Kasir</span>';
     }
 
-    // Menu admin hanya tampil untuk admin
+    // Fitur khusus ADMIN
     if (role === 'admin') {
+      // Tampilkan menu admin di sidebar
       document.getElementById('menuAdmin').style.display = 'block';
+
+      // Tampilkan tombol Kelola User di topbar
+      document.getElementById('btnKelolaUser').style.display = 'inline-flex';
+
+      // Tambah 2 tombol admin di Quick Access
+      const grid = document.getElementById('quickGrid');
+
+      const itemKelola = document.createElement('a');
+      itemKelola.href = 'admin.html';
+      itemKelola.className = 'quick-item admin-only';
+      itemKelola.innerHTML = '<i class="ti ti-users"></i>Kelola User';
+      grid.appendChild(itemKelola);
+
+      const itemTambah = document.createElement('a');
+      itemTambah.href = 'admin.html';
+      itemTambah.className = 'quick-item admin-only';
+      itemTambah.innerHTML = '<i class="ti ti-user-plus"></i>Tambah User';
+      // Buka admin.html dengan flag supaya modal langsung terbuka
+      itemTambah.onclick = (e) => {
+        e.preventDefault();
+        localStorage.setItem('adminAction', 'tambahUser');
+        window.location.href = 'admin.html';
+      };
+      grid.appendChild(itemTambah);
     }
   }
   tampilUser();
 
+  /* ── TANGGAL & SALAM ── */
   const now = new Date();
   document.getElementById('tanggalHari').textContent = now.toLocaleDateString('id-ID', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   });
-
   const jam = now.getHours();
   const salam = jam < 11 ? 'Selamat pagi' : jam < 15 ? 'Selamat siang' : jam < 18 ? 'Selamat sore' : 'Selamat malam';
   document.getElementById('welcomeSub').textContent = salam + '! Semangat bekerja hari ini 💪';
 
+  /* ── LOAD DATA ── */
   async function loadData() {
     try {
-      const resHari = await fetch('/api/laporan?periode=hari', { headers: { 'Authorization': 'Bearer ' + token } });
-      // ✅ FIX: Jika 401, jangan redirect — mungkin endpoint ini butuh role admin.
-      // Tampilkan 0 saja, jangan paksa logout.
+      const [resHari, resBulan, resProduk, resTrx] = await Promise.all([
+        fetch('/api/laporan?periode=hari',  { headers: { 'Authorization': 'Bearer ' + token } }),
+        fetch('/api/laporan?periode=bulan', { headers: { 'Authorization': 'Bearer ' + token } }),
+        fetch('/api/produk',                { headers: { 'Authorization': 'Bearer ' + token } }),
+        fetch('/api/transaksi',             { headers: { 'Authorization': 'Bearer ' + token } }),
+      ]);
+
       if (resHari.ok) {
-        const dataHari = await resHari.json();
-        document.getElementById('statPendapatan').textContent = formatUSD(dataHari.totalPendapatan);
-        document.getElementById('statTrx').textContent        = dataHari.jumlahTrx;
+        const d = await resHari.json();
+        document.getElementById('statPendapatan').textContent = formatUSD(d.totalPendapatan);
+        document.getElementById('statTrx').textContent        = d.jumlahTrx;
       }
-
-      const resBulan = await fetch('/api/laporan?periode=bulan', { headers: { 'Authorization': 'Bearer ' + token } });
       if (resBulan.ok) {
-        const dataBulan = await resBulan.json();
-        document.getElementById('statBulan').textContent = formatUSD(dataBulan.totalPendapatan);
+        const d = await resBulan.json();
+        document.getElementById('statBulan').textContent = formatUSD(d.totalPendapatan);
       }
-
-      const resProduk = await fetch('/api/produk', { headers: { 'Authorization': 'Bearer ' + token } });
       if (resProduk.ok) {
-        const produk = await resProduk.json();
-        document.getElementById('statProduk').textContent = produk.length;
+        const d = await resProduk.json();
+        document.getElementById('statProduk').textContent = d.length;
       }
-
-      const resTrx = await fetch('/api/transaksi', { headers: { 'Authorization': 'Bearer ' + token } });
       if (resTrx.ok) {
         const trxList = await resTrx.json();
         const last5 = [...trxList].reverse().slice(0, 5);
-
         const el = document.getElementById('aktivitasList');
         if (!last5.length) {
           el.innerHTML = `
@@ -740,8 +641,7 @@
                 <div class="trx-meta">${new Date(t.waktu).toLocaleString('id-ID')} · ${t.kasir} · ${t.items.length} item</div>
               </div>
               <div class="trx-val">${formatUSD(t.total)}</div>
-            </div>
-          `).join('');
+            </div>`).join('');
         }
       }
     } catch(e) {
@@ -749,6 +649,7 @@
     }
   }
 
+  /* ── EDIT PROFIL ── */
   function bukaEditProfil() {
     document.getElementById('editNama').value  = user.nama  || '';
     document.getElementById('editEmail').value = user.email || '';
@@ -764,7 +665,6 @@
     const errEl = document.getElementById('editError');
     const okEl  = document.getElementById('editSukses');
     errEl.style.display = 'none'; okEl.style.display = 'none';
-
     if (!nama || !email) {
       errEl.textContent = 'Nama dan email wajib diisi!';
       errEl.style.display = 'block'; return;
@@ -797,9 +697,7 @@
     window.location.href = 'index.html';
   }
 
-  function formatUSD(n) {
-    return '$ ' + Number(n || 0).toLocaleString('en-US');
-  }
+  function formatUSD(n) { return '$ ' + Number(n || 0).toLocaleString('en-US'); }
 
   loadData();
 </script>
