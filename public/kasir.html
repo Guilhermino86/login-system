@@ -4,154 +4,522 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kasir - Skinthesia</title>
-  <link rel="stylesheet" href="kasir-style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <style>
-  /* ===== NOTA PREMIUM ===== */
-  .nota-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.65);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 300; padding: 20px;
-    overflow-y: auto;
-  }
-  .nota-wrap {
-    display: flex; flex-direction: column;
-    align-items: center; gap: 14px;
-    width: 100%; max-width: 380px;
-  }
-  .nota {
-    background: white;
-    width: 100%;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-  }
-  .nota::before, .nota::after {
-    content: '';
-    display: block; height: 6px;
-    background: linear-gradient(90deg, #b8860b, #ffd700, #daa520, #ffd700, #b8860b);
-  }
-  /* Header */
-  .nota-head {
-    background: #0f172a;
-    text-align: center;
-    padding: 20px 20px 16px;
-  }
-  .nota-logo {
-    width: 46px; height: 46px;
-    background: linear-gradient(135deg, #b8860b, #ffd700);
-    border-radius: 50%;
-    display: inline-flex; align-items: center; justify-content: center;
-    font-size: 18px; color: #0f172a; font-weight: 900;
-    margin-bottom: 10px;
-  }
-  .nota-nama  { font-size: 18px; font-weight: 900; letter-spacing: 3px; color: #ffd700; }
-  .nota-sub   { font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin: 4px 0 10px; }
-  .nota-kontak { display: flex; justify-content: center; gap: 14px; font-size: 10px; color: #64748b; }
-  .nota-divider {
-    display: flex; align-items: center; gap: 8px;
-    margin-top: 14px; color: #b8860b; font-size: 10px;
-  }
-  .nota-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, #b8860b, transparent); }
-  /* Info Trx */
-  .nota-info { padding: 12px 20px; background: #f8fafc; }
-  .nota-info-row {
-    display: flex; justify-content: space-between;
-    font-size: 11px; padding: 4px 0;
-    border-bottom: 1px dashed #e2e8f0;
-  }
-  .nota-info-row:last-child { border-bottom: none; }
-  .nota-info-label { color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 10px; }
-  .nota-info-val   { color: #0f172a; font-weight: 700; }
-  /* Garis */
-  .nota-garis { border: none; border-top: 1.5px dashed #e2e8f0; margin: 0 20px; }
-  /* Items */
-  .nota-th {
-    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-    padding: 8px 20px 4px;
-    font-size: 9px; font-weight: 800;
-    color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;
-  }
-  .nota-th span:not(:first-child) { text-align: right; }
-  .nota-items { padding: 4px 20px 12px; }
-  .nota-item {
-    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-    padding: 6px 0; border-bottom: 1px solid #f1f5f9;
-    font-size: 12px; align-items: center;
-  }
-  .nota-item:last-child { border-bottom: none; }
-  .nota-item-nama  { font-weight: 600; color: #1e293b; }
-  .nota-item-qty, .nota-item-harga, .nota-item-total { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
-  .nota-item-total { font-weight: 700; }
-  /* Summary */
-  .nota-summary { padding: 10px 20px 16px; }
-  .nota-s-row {
-    display: flex; justify-content: space-between;
-    font-size: 12px; padding: 3px 0; color: #475569;
-  }
-  .nota-s-row span:last-child { font-family: 'JetBrains Mono', monospace; }
-  .nota-s-total {
-    display: flex; justify-content: space-between;
-    font-size: 15px; font-weight: 900;
-    padding: 10px 14px; margin: 8px 0;
-    background: #0f172a; color: #ffd700;
-    border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .nota-s-kembalian { color: #16a34a; font-weight: 700; }
-  /* Footer */
-  .nota-foot {
-    background: #0f172a;
-    text-align: center; padding: 18px 20px;
-  }
-  .nota-foot-divider {
-    display: flex; align-items: center; gap: 8px;
-    color: #b8860b; font-size: 10px; margin-bottom: 14px;
-  }
-  .nota-thanks     { font-size: 14px; font-weight: 800; color: #ffd700; letter-spacing: 2px; margin-bottom: 4px; }
-  .nota-thanks-sub { font-size: 10px; color: #64748b; margin-bottom: 8px; }
-  .nota-web        { font-size: 10px; color: #475569; letter-spacing: 1px; margin-bottom: 12px; }
-  .nota-barcode    { display: flex; justify-content: center; gap: 2px; }
-  /* Tombol aksi */
-  .nota-btns { display: flex; gap: 10px; width: 100%; }
-  .nota-btn-print {
-    flex: 1; padding: 13px;
-    background: #1e293b; color: #ffd700;
-    border: 2px solid #b8860b; border-radius: 12px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px; font-weight: 700; cursor: pointer;
-  }
-  .nota-btn-print:hover { background: #0f172a; }
-  .nota-btn-selesai {
-    flex: 1; padding: 13px;
-    background: linear-gradient(135deg, #b8860b, #daa520);
-    color: #0f172a; border: none; border-radius: 12px;
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-size: 14px; font-weight: 800; cursor: pointer;
-  }
-  .nota-btn-selesai:hover { opacity: 0.9; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* ===== PRINT ===== */
-  @media print {
-    @page { size: A4; margin: 15mm; }
-    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    body > * { display: none !important; }
+    :root {
+      --sidebar-w: 220px;
+      --accent:       #16a34a;
+      --accent-dark:  #15803d;
+      --accent-light: #f0fdf4;
+      --accent-mid:   #86efac;
+      --red:    #dc2626;
+      --amber:  #d97706;
+      --blue:   #2563eb;
+      --text:   #0f172a;
+      --text-2: #64748b;
+      --text-3: #94a3b8;
+      --border: #e2e8f0;
+      --bg:     #f8fafc;
+      --surface:#ffffff;
+      --sidebar-bg: #0f172a;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--sidebar-bg);
+      min-height: 100vh;
+      position: fixed; top: 0; left: 0;
+      display: flex; flex-direction: column;
+      z-index: 100;
+      border-right: 1px solid rgba(255,255,255,0.04);
+    }
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .brand-icon {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 17px; flex-shrink: 0;
+    }
+    .brand-name { font-size: 15px; font-weight: 800; color: #f1f5f9; letter-spacing: -0.2px; }
+    .brand-sub  { font-size: 10px; color: #475569; margin-top: 1px; }
+
+    .sidebar-nav { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; gap: 1px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 11px; border-radius: 8px;
+      color: #64748b; text-decoration: none;
+      font-size: 13px; font-weight: 500;
+      transition: all 0.12s;
+    }
+    .nav-item i { font-size: 17px; flex-shrink: 0; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
+    .nav-item.aktif { background: rgba(22,163,74,0.15); color: #4ade80; }
+    .nav-item.aktif i { color: #4ade80; }
+
+    .sidebar-footer {
+      padding: 10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .user-avatar {
+      width: 34px; height: 34px;
+      background: var(--accent); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; color: white; flex-shrink: 0;
+    }
+    .user-nama  { font-size: 12.5px; font-weight: 600; color: #f1f5f9; }
+    .user-role  { font-size: 10.5px; color: #475569; }
+    .btn-logout {
+      background: transparent; border: none;
+      width: 28px; height: 28px; border-radius: 6px;
+      font-size: 16px; cursor: pointer;
+      color: #475569; display: flex; align-items: center; justify-content: center;
+      transition: all 0.12s; margin-left: auto; flex-shrink: 0;
+    }
+    .btn-logout:hover { background: rgba(220,38,38,0.15); color: #f87171; }
+
+    /* ── MAIN ── */
+    .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+    }
+    .page-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+    .page-sub   { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+
+    .badge-transaksi {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 7px 14px;
+      font-size: 12px; color: var(--text-2);
+    }
+    .badge-transaksi strong {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; font-weight: 700; color: var(--accent);
+    }
+
+    /* ── KASIR LAYOUT ── */
+    .kasir-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      height: calc(100vh - 60px);
+      overflow: hidden;
+    }
+
+    /* ── PANEL PRODUK ── */
+    .panel-produk {
+      display: flex; flex-direction: column;
+      border-right: 1px solid var(--border);
+      overflow: hidden; background: var(--bg);
+    }
+
+    .search-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .search-bar i { font-size: 17px; color: var(--text-3); flex-shrink: 0; }
+    .search-bar input {
+      flex: 1; border: none; outline: none;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13.5px; color: var(--text);
+      background: transparent;
+    }
+    .search-bar input::placeholder { color: var(--text-3); }
+
+    .produk-grid {
+      flex: 1; overflow-y: auto;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      align-content: start;
+    }
+    .produk-grid::-webkit-scrollbar { width: 4px; }
+    .produk-grid::-webkit-scrollbar-track { background: transparent; }
+    .produk-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .produk-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 14px 12px;
+      cursor: pointer; transition: all 0.12s;
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; gap: 6px;
+      user-select: none;
+    }
+    .produk-card:hover:not(.habis) {
+      border-color: var(--accent-mid);
+      box-shadow: 0 4px 12px rgba(22,163,74,0.12);
+      transform: translateY(-1px);
+    }
+    .produk-card:active:not(.habis) { transform: scale(0.97); }
+    .produk-card.habis { opacity: 0.5; cursor: not-allowed; }
+
+    .produk-emoji {
+      font-size: 28px;
+      width: 52px; height: 52px;
+      background: var(--bg);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .produk-nama  { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .produk-harga {
+      font-size: 12.5px; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent);
+    }
+    .produk-stok  { font-size: 11px; color: var(--text-3); }
+    .stok-rendah  { color: var(--amber) !important; font-weight: 600; }
+
+    .loading-state, .empty-state {
+      grid-column: 1 / -1;
+      text-align: center; padding: 40px 20px;
+      color: var(--text-3); font-size: 13px;
+    }
+    .empty-state i { font-size: 32px; display: block; margin-bottom: 10px; color: var(--border); }
+    .empty-state a { color: var(--accent); font-weight: 600; text-decoration: none; }
+
+    /* ── PANEL KERANJANG ── */
+    .panel-keranjang {
+      background: var(--surface);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    .keranjang-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .keranjang-header i { font-size: 18px; color: var(--accent); }
+    .keranjang-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .keranjang-count {
+      margin-left: auto;
+      background: var(--accent-light);
+      color: var(--accent); font-size: 11.5px; font-weight: 700;
+      padding: 2px 9px; border-radius: 20px;
+    }
+
+    .keranjang-items {
+      flex: 1; overflow-y: auto; padding: 8px 12px;
+    }
+    .keranjang-items::-webkit-scrollbar { width: 3px; }
+    .keranjang-items::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .empty-cart {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; height: 100%;
+      color: var(--text-3); text-align: center; gap: 8px; padding: 30px;
+    }
+    .empty-cart i { font-size: 36px; color: var(--border); }
+    .empty-cart p  { font-size: 13px; font-weight: 600; color: var(--text-2); }
+    .empty-cart small { font-size: 11.5px; }
+
+    .keranjang-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--border);
+      border-radius: 8px;
+      transition: background 0.1s;
+    }
+    .keranjang-item:last-child { border-bottom: none; }
+    .keranjang-item:hover { background: var(--bg); }
+
+    .ki-emoji { font-size: 20px; flex-shrink: 0; }
+    .ki-info  { flex: 1; min-width: 0; }
+    .ki-nama  { font-size: 12.5px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ki-harga { font-size: 11.5px; color: var(--text-2); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+
+    .ki-qty {
+      display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .ki-qty button {
+      width: 24px; height: 24px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg);
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text); transition: all 0.1s;
+    }
+    .ki-qty button:hover { background: var(--accent); color: white; border-color: var(--accent); }
+    .ki-qty span { font-size: 13px; font-weight: 700; min-width: 18px; text-align: center; }
+
+    .ki-subtotal {
+      font-size: 12px; font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent); flex-shrink: 0;
+      min-width: 52px; text-align: right;
+    }
+    .ki-hapus {
+      background: none; border: none; cursor: pointer;
+      color: var(--text-3); font-size: 14px; padding: 3px;
+      border-radius: 5px; transition: all 0.1s; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ki-hapus:hover { background: #fef2f2; color: var(--red); }
+
+    /* ── SUMMARY ── */
+    .keranjang-summary {
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 7px;
+      background: var(--bg);
+    }
+    .summary-row {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 13px; color: var(--text-2);
+    }
+    .summary-row span:last-child {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600; color: var(--text);
+    }
+    .diskon-row { align-items: center; }
+    .diskon-input-wrap {
+      display: flex; align-items: center; gap: 5px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 7px; padding: 4px 9px;
+      font-size: 12px; color: var(--text-2);
+    }
+    .diskon-input-wrap input {
+      border: none; outline: none; width: 64px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px; font-weight: 600; color: var(--text);
+      background: transparent; text-align: right;
+    }
+    .total-row {
+      padding: 10px 12px;
+      background: var(--sidebar-bg);
+      border-radius: 9px; margin-top: 2px;
+    }
+    .total-row span { font-size: 13px; font-weight: 700; color: #94a3b8; }
+    .total-angka {
+      font-family: 'JetBrains Mono', monospace !important;
+      font-size: 17px !important; font-weight: 800 !important;
+      color: #ffd700 !important;
+    }
+
+    /* ── BAYAR SECTION ── */
+    .bayar-section {
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+    }
+    .bayar-label { font-size: 11.5px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 7px; display: block; }
+
+    .bayar-input-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 9px; padding: 9px 12px;
+      transition: border-color 0.12s;
+    }
+    .bayar-input-wrap:focus-within { border-color: var(--accent); }
+    .bayar-prefix { font-size: 13px; font-weight: 700; color: var(--text-2); }
+    .bayar-input-wrap input {
+      flex: 1; border: none; outline: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 15px; font-weight: 700; color: var(--text);
+      background: transparent;
+    }
+    .bayar-input-wrap input::placeholder { color: var(--text-3); font-weight: 400; }
+
+    .kembalian-box {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 8px; padding: 8px 12px;
+      background: var(--accent-light); border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+    }
+    .kembalian-box strong {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px; font-weight: 800;
+    }
+
+    /* ── ACTIONS ── */
+    .keranjang-actions {
+      display: flex; gap: 8px; padding: 10px 14px;
+      border-top: 1px solid var(--border);
+    }
+    .btn-batal {
+      flex: 1; padding: 11px;
+      background: #fef2f2; color: var(--red);
+      border: 1px solid #fecaca; border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all 0.12s;
+    }
+    .btn-batal:hover { background: var(--red); color: white; border-color: var(--red); }
+    .btn-batal i { font-size: 15px; }
+
+    .btn-bayar {
+      flex: 2; padding: 11px;
+      background: var(--accent); color: white;
+      border: none; border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13.5px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all 0.12s;
+      box-shadow: 0 2px 8px rgba(22,163,74,0.3);
+    }
+    .btn-bayar:hover { background: var(--accent-dark); }
+    .btn-bayar:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+    .btn-bayar i { font-size: 16px; }
+
+    /* ── NOTA (TIDAK DIUBAH) ── */
     .nota-overlay {
-      position: static !important; background: none !important;
-      padding: 0 !important; display: flex !important;
-      justify-content: center !important; align-items: center !important;
-      min-height: 100vh !important;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.65);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 300; padding: 20px;
+      overflow-y: auto;
     }
     .nota-wrap {
-      width: 380px !important;
-      margin: 0 auto !important;
-      gap: 0 !important;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 14px;
+      width: 100%; max-width: 380px;
     }
-    .nota { box-shadow: none !important; width: 100% !important; }
-    .nota-btns { display: none !important; }
-  }
+    .nota {
+      background: white;
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .nota::before, .nota::after {
+      content: '';
+      display: block; height: 6px;
+      background: linear-gradient(90deg, #b8860b, #ffd700, #daa520, #ffd700, #b8860b);
+    }
+    .nota-head {
+      background: #0f172a;
+      text-align: center;
+      padding: 20px 20px 16px;
+    }
+    .nota-logo {
+      width: 46px; height: 46px;
+      background: linear-gradient(135deg, #b8860b, #ffd700);
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 18px; color: #0f172a; font-weight: 900;
+      margin-bottom: 10px;
+    }
+    .nota-nama  { font-size: 18px; font-weight: 900; letter-spacing: 3px; color: #ffd700; }
+    .nota-sub   { font-size: 10px; color: #94a3b8; letter-spacing: 1px; margin: 4px 0 10px; }
+    .nota-kontak { display: flex; justify-content: center; gap: 14px; font-size: 10px; color: #64748b; }
+    .nota-divider {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 14px; color: #b8860b; font-size: 10px;
+    }
+    .nota-divider-line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, #b8860b, transparent); }
+    .nota-info { padding: 12px 20px; background: #f8fafc; }
+    .nota-info-row {
+      display: flex; justify-content: space-between;
+      font-size: 11px; padding: 4px 0;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    .nota-info-row:last-child { border-bottom: none; }
+    .nota-info-label { color: #94a3b8; font-weight: 600; text-transform: uppercase; font-size: 10px; }
+    .nota-info-val   { color: #0f172a; font-weight: 700; }
+    .nota-garis { border: none; border-top: 1.5px dashed #e2e8f0; margin: 0 20px; }
+    .nota-th {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 8px 20px 4px;
+      font-size: 9px; font-weight: 800;
+      color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .nota-th span:not(:first-child) { text-align: right; }
+    .nota-items { padding: 4px 20px 12px; }
+    .nota-item {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 6px 0; border-bottom: 1px solid #f1f5f9;
+      font-size: 12px; align-items: center;
+    }
+    .nota-item:last-child { border-bottom: none; }
+    .nota-item-nama  { font-weight: 600; color: #1e293b; }
+    .nota-item-qty, .nota-item-harga, .nota-item-total { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+    .nota-item-total { font-weight: 700; }
+    .nota-summary { padding: 10px 20px 16px; }
+    .nota-s-row {
+      display: flex; justify-content: space-between;
+      font-size: 12px; padding: 3px 0; color: #475569;
+    }
+    .nota-s-row span:last-child { font-family: 'JetBrains Mono', monospace; }
+    .nota-s-total {
+      display: flex; justify-content: space-between;
+      font-size: 15px; font-weight: 900;
+      padding: 10px 14px; margin: 8px 0;
+      background: #0f172a; color: #ffd700;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .nota-s-kembalian { color: #16a34a; font-weight: 700; }
+    .nota-foot {
+      background: #0f172a;
+      text-align: center; padding: 18px 20px;
+    }
+    .nota-foot-divider {
+      display: flex; align-items: center; gap: 8px;
+      color: #b8860b; font-size: 10px; margin-bottom: 14px;
+    }
+    .nota-thanks     { font-size: 14px; font-weight: 800; color: #ffd700; letter-spacing: 2px; margin-bottom: 4px; }
+    .nota-thanks-sub { font-size: 10px; color: #64748b; margin-bottom: 8px; }
+    .nota-web        { font-size: 10px; color: #475569; letter-spacing: 1px; margin-bottom: 12px; }
+    .nota-barcode    { display: flex; justify-content: center; gap: 2px; }
+    .nota-btns { display: flex; gap: 10px; width: 100%; }
+    .nota-btn-print {
+      flex: 1; padding: 13px;
+      background: #1e293b; color: #ffd700;
+      border: 2px solid #b8860b; border-radius: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+    }
+    .nota-btn-print:hover { background: #0f172a; }
+    .nota-btn-selesai {
+      flex: 1; padding: 13px;
+      background: linear-gradient(135deg, #b8860b, #daa520);
+      color: #0f172a; border: none; border-radius: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px; font-weight: 800; cursor: pointer;
+    }
+    .nota-btn-selesai:hover { opacity: 0.9; }
+
+    @media print {
+      @page { size: A4; margin: 15mm; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body > * { display: none !important; }
+      .nota-overlay {
+        position: static !important; background: none !important;
+        padding: 0 !important; display: flex !important;
+        justify-content: center !important; align-items: center !important;
+        min-height: 100vh !important;
+      }
+      .nota-wrap { width: 380px !important; margin: 0 auto !important; gap: 0 !important; }
+      .nota { box-shadow: none !important; width: 100% !important; }
+      .nota-btns { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -159,24 +527,27 @@
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-brand">
-    <div class="brand-icon">✦</div>
-    <span class="brand-name">Skinthesia</span>
+    <div class="brand-icon"><i class="ti ti-shopping-cart"></i></div>
+    <div>
+      <div class="brand-name">Skinthesia</div>
+      <div class="brand-sub">Point of Sale</div>
+    </div>
   </div>
   <nav class="sidebar-nav">
-    <a href="kasir.html" class="nav-item aktif"><span class="nav-icon">🧾</span><span>Kasir</span></a>
-    <a href="produk.html" class="nav-item"><span class="nav-icon">📦</span><span>Produk</span></a>
-    <a href="riwayat.html" class="nav-item"><span class="nav-icon">📋</span><span>Riwayat</span></a>
-    <a href="laporan.html" class="nav-item"><span class="nav-icon">📊</span><span>Laporan</span></a>
+    <a href="kasir.html"   class="nav-item aktif"><i class="ti ti-receipt"></i><span>Kasir</span></a>
+    <a href="produk.html"  class="nav-item"><i class="ti ti-package"></i><span>Produk</span></a>
+    <a href="riwayat.html" class="nav-item"><i class="ti ti-clipboard-list"></i><span>Riwayat</span></a>
+    <a href="laporan.html" class="nav-item"><i class="ti ti-chart-bar"></i><span>Laporan</span></a>
   </nav>
   <div class="sidebar-footer">
-    <div class="user-info">
-      <div class="user-avatar" id="avatarSidebar">K</div>
-      <div>
-        <div class="user-nama" id="namaSidebar">-</div>
-        <div class="user-role">Kasir</div>
-      </div>
+    <div class="user-avatar" id="avatarSidebar">K</div>
+    <div>
+      <div class="user-nama" id="namaSidebar">-</div>
+      <div class="user-role">Kasir</div>
     </div>
-    <button class="btn-logout" onclick="keluar()">🚪</button>
+    <button class="btn-logout" onclick="keluar()" title="Keluar">
+      <i class="ti ti-logout"></i>
+    </button>
   </div>
 </aside>
 
@@ -184,22 +555,21 @@
 <main class="main">
   <header class="topbar">
     <div>
-      <h1 class="page-title">Transaksi Baru</h1>
-      <p class="page-sub" id="tanggalSekarang"></p>
+      <div class="page-title">Transaksi Baru</div>
+      <div class="page-sub" id="tanggalSekarang"></div>
     </div>
-    <div class="topbar-right">
-      <div class="badge-transaksi">
-        <span>No. Transaksi</span>
-        <strong id="noTransaksi">#TRX-0001</strong>
-      </div>
+    <div class="badge-transaksi">
+      <span>No. Transaksi</span>
+      <strong id="noTransaksi">#TRX-0001</strong>
     </div>
   </header>
 
   <div class="kasir-layout">
-    <!-- Produk -->
+
+    <!-- PRODUK -->
     <section class="panel-produk">
       <div class="search-bar">
-        <span class="search-icon">🔍</span>
+        <i class="ti ti-search"></i>
         <input type="text" id="cariProduk" placeholder="Cari produk..." oninput="filterProduk()" />
       </div>
       <div class="produk-grid" id="produkGrid">
@@ -207,19 +577,26 @@
       </div>
     </section>
 
-    <!-- Keranjang -->
+    <!-- KERANJANG -->
     <section class="panel-keranjang">
-      <h2 class="keranjang-title">🛒 Keranjang</h2>
+      <div class="keranjang-header">
+        <i class="ti ti-shopping-cart"></i>
+        <span class="keranjang-title">Keranjang</span>
+        <span class="keranjang-count" id="keranjangCount">0 item</span>
+      </div>
+
       <div class="keranjang-items" id="keranjangItems">
         <div class="empty-cart">
-          <div class="empty-icon">🛒</div>
+          <i class="ti ti-shopping-cart-off"></i>
           <p>Keranjang kosong</p>
           <small>Klik produk untuk menambahkan</small>
         </div>
       </div>
+
       <div class="keranjang-summary">
         <div class="summary-row">
-          <span>Subtotal</span><span id="subtotal">$ 0</span>
+          <span>Subtotal</span>
+          <span id="subtotal">$ 0</span>
         </div>
         <div class="summary-row diskon-row">
           <span>Diskon</span>
@@ -233,6 +610,7 @@
           <span id="total" class="total-angka">$ 0</span>
         </div>
       </div>
+
       <div class="bayar-section">
         <label class="bayar-label">Uang Diterima</label>
         <div class="bayar-input-wrap">
@@ -244,15 +622,20 @@
           <strong id="kembalian">$ 0</strong>
         </div>
       </div>
+
       <div class="keranjang-actions">
-        <button class="btn-batal" onclick="batalTransaksi()">🗑️ Batal</button>
-        <button class="btn-bayar" id="btnBayar" onclick="prosesTransaksi()">✅ Bayar Sekarang</button>
+        <button class="btn-batal" onclick="batalTransaksi()">
+          <i class="ti ti-trash"></i> Batal
+        </button>
+        <button class="btn-bayar" id="btnBayar" onclick="prosesTransaksi()">
+          <i class="ti ti-check"></i> Bayar Sekarang
+        </button>
       </div>
     </section>
   </div>
 </main>
 
-<!-- NOTA PREMIUM -->
+<!-- NOTA PREMIUM (tidak diubah) -->
 <div class="nota-overlay" id="modalStruk" style="display:none">
   <div class="nota-wrap">
     <div class="nota" id="notaPrint">
@@ -309,7 +692,9 @@
   document.getElementById('avatarSidebar').textContent = (user.nama || 'K')[0].toUpperCase();
 
   const now = new Date();
-  document.getElementById('tanggalSekarang').textContent = now.toLocaleDateString('id-ID', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  document.getElementById('tanggalSekarang').textContent = now.toLocaleDateString('id-ID', {
+    weekday:'long', year:'numeric', month:'long', day:'numeric'
+  });
 
   let semuaProduk = [], keranjang = [], noUrut = 1;
 
@@ -324,18 +709,31 @@
       const res = await fetch('/api/produk', { headers: {'Authorization':'Bearer '+token} });
       semuaProduk = await res.json();
       renderProduk(semuaProduk);
-    } catch { document.getElementById('produkGrid').innerHTML = '<div class="empty-state">Gagal memuat produk</div>'; }
+    } catch {
+      document.getElementById('produkGrid').innerHTML = `
+        <div class="empty-state">
+          <i class="ti ti-wifi-off"></i>
+          Gagal memuat produk
+        </div>`;
+    }
   }
 
   function renderProduk(list) {
     const grid = document.getElementById('produkGrid');
-    if (!list.length) { grid.innerHTML = '<div class="empty-state">Belum ada produk.<br><a href="produk.html">Tambah produk</a></div>'; return; }
+    if (!list.length) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <i class="ti ti-package-off"></i>
+          Belum ada produk.<br><a href="produk.html">Tambah produk</a>
+        </div>`;
+      return;
+    }
     grid.innerHTML = list.map(p => `
       <div class="produk-card ${p.stok===0?'habis':''}" onclick="${p.stok>0?'tambah('+p.id+')':''}">
         <div class="produk-emoji">${p.emoji||'📦'}</div>
         <div class="produk-nama">${p.nama}</div>
         <div class="produk-harga">${usd(p.harga)}</div>
-        <div class="produk-stok ${p.stok<=5?'stok-rendah':''}">${p.stok===0?'❌ Habis':'Stok: '+p.stok}</div>
+        <div class="produk-stok ${p.stok<=5?'stok-rendah':''}">${p.stok===0?'Habis':'Stok: '+p.stok}</div>
       </div>`).join('');
   }
 
@@ -344,12 +742,21 @@
     renderProduk(semuaProduk.filter(p => p.nama.toLowerCase().includes(q)));
   }
 
+  function updateCount() {
+    const total = keranjang.reduce((s,k) => s + k.qty, 0);
+    document.getElementById('keranjangCount').textContent = total + ' item';
+  }
+
   function tambah(id) {
     const p = semuaProduk.find(x => x.id===id);
     if (!p || p.stok===0) return;
     const ada = keranjang.find(k => k.id===id);
-    if (ada) { if (ada.qty>=p.stok) { alert('Stok '+p.nama+' hanya '+p.stok); return; } ada.qty++; }
-    else keranjang.push({...p, qty:1});
+    if (ada) {
+      if (ada.qty >= p.stok) { alert('Stok ' + p.nama + ' hanya ' + p.stok); return; }
+      ada.qty++;
+    } else {
+      keranjang.push({...p, qty:1});
+    }
     renderKeranjang();
   }
 
@@ -357,23 +764,32 @@
     const i = keranjang.findIndex(k => k.id===id);
     if (i===-1) return;
     keranjang[i].qty += d;
-    if (keranjang[i].qty<=0) keranjang.splice(i,1);
+    if (keranjang[i].qty <= 0) keranjang.splice(i,1);
     renderKeranjang();
   }
 
-  function hapus(id) { keranjang = keranjang.filter(k => k.id!==id); renderKeranjang(); }
+  function hapus(id) {
+    keranjang = keranjang.filter(k => k.id!==id);
+    renderKeranjang();
+  }
 
   function renderKeranjang() {
     const el = document.getElementById('keranjangItems');
     if (!keranjang.length) {
-      el.innerHTML = '<div class="empty-cart"><div class="empty-icon">🛒</div><p>Keranjang kosong</p><small>Klik produk untuk menambahkan</small></div>';
-      hitungTotal(); return;
+      el.innerHTML = `
+        <div class="empty-cart">
+          <i class="ti ti-shopping-cart-off"></i>
+          <p>Keranjang kosong</p>
+          <small>Klik produk untuk menambahkan</small>
+        </div>`;
+      hitungTotal(); updateCount(); return;
     }
     el.innerHTML = keranjang.map(k => `
       <div class="keranjang-item">
+        <span class="ki-emoji">${k.emoji||'📦'}</span>
         <div class="ki-info">
-          <span class="ki-emoji">${k.emoji||'📦'}</span>
-          <div><div class="ki-nama">${k.nama}</div><div class="ki-harga">${usd(k.harga)}</div></div>
+          <div class="ki-nama">${k.nama}</div>
+          <div class="ki-harga">${usd(k.harga)}</div>
         </div>
         <div class="ki-qty">
           <button onclick="ubahQty(${k.id},-1)">−</button>
@@ -381,30 +797,32 @@
           <button onclick="ubahQty(${k.id},1)">+</button>
         </div>
         <div class="ki-subtotal">${usd(k.harga*k.qty)}</div>
-        <button class="ki-hapus" onclick="hapus(${k.id})">✕</button>
+        <button class="ki-hapus" onclick="hapus(${k.id})"><i class="ti ti-x"></i></button>
       </div>`).join('');
-    hitungTotal();
+    hitungTotal(); updateCount();
   }
 
   function hitungTotal() {
-    const sub = keranjang.reduce((s,k)=>s+k.harga*k.qty,0);
-    const dis = parseInt(document.getElementById('diskon').value)||0;
+    const sub = keranjang.reduce((s,k) => s + k.harga * k.qty, 0);
+    const dis = parseInt(document.getElementById('diskon').value) || 0;
     document.getElementById('subtotal').textContent = usd(sub);
-    document.getElementById('total').textContent    = usd(Math.max(0,sub-dis));
+    document.getElementById('total').textContent    = usd(Math.max(0, sub - dis));
     hitungKembalian();
   }
 
   function hitungKembalian() {
-    const sub  = keranjang.reduce((s,k)=>s+k.harga*k.qty,0);
-    const dis  = parseInt(document.getElementById('diskon').value)||0;
-    const tot  = Math.max(0,sub-dis);
-    const bayar= parseInt(document.getElementById('uangDiterima').value)||0;
-    const box  = document.getElementById('kembalianBox');
-    if (bayar>0) {
-      document.getElementById('kembalian').textContent = usd(bayar-tot);
+    const sub   = keranjang.reduce((s,k) => s + k.harga * k.qty, 0);
+    const dis   = parseInt(document.getElementById('diskon').value) || 0;
+    const tot   = Math.max(0, sub - dis);
+    const bayar = parseInt(document.getElementById('uangDiterima').value) || 0;
+    const box   = document.getElementById('kembalianBox');
+    if (bayar > 0) {
+      document.getElementById('kembalian').textContent = usd(bayar - tot);
       box.style.display = 'flex';
-      box.style.color = bayar<tot ? '#ef4444' : '#16a34a';
-    } else box.style.display = 'none';
+      box.style.color = bayar < tot ? '#ef4444' : '#16a34a';
+    } else {
+      box.style.display = 'none';
+    }
   }
 
   function batalTransaksi() {
@@ -420,30 +838,37 @@
 
   async function prosesTransaksi() {
     if (!keranjang.length) { alert('Keranjang kosong!'); return; }
-    const dis  = parseInt(document.getElementById('diskon').value)||0;
-    const sub  = keranjang.reduce((s,k)=>s+k.harga*k.qty,0);
-    const tot  = Math.max(0,sub-dis);
-    const bayar= parseInt(document.getElementById('uangDiterima').value)||0;
-    if (bayar<tot) { alert('Uang diterima kurang!'); return; }
+    const dis   = parseInt(document.getElementById('diskon').value) || 0;
+    const sub   = keranjang.reduce((s,k) => s + k.harga * k.qty, 0);
+    const tot   = Math.max(0, sub - dis);
+    const bayar = parseInt(document.getElementById('uangDiterima').value) || 0;
+    if (bayar < tot) { alert('Uang diterima kurang!'); return; }
 
     const btn = document.getElementById('btnBayar');
-    btn.disabled = true; btn.textContent = 'Memproses...';
+    btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Memproses...';
 
     try {
       const res = await fetch('/api/transaksi', {
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+        method: 'POST',
+        headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
         body: JSON.stringify({
           noTransaksi: generateNo(),
-          items: keranjang.map(k=>({id:k.id,nama:k.nama,harga:k.harga,qty:k.qty})),
-          subtotal:sub, diskon:dis, total:tot, bayar, kembalian:bayar-tot, kasir:user.nama
+          items: keranjang.map(k => ({id:k.id, nama:k.nama, harga:k.harga, qty:k.qty})),
+          subtotal: sub, diskon: dis, total: tot, bayar, kembalian: bayar-tot, kasir: user.nama
         })
       });
-      if (!res.ok) { const e=await res.json(); alert(e.error||'Gagal!'); }
-      else { const h=await res.json(); tampilNota(h.transaksi); await loadProduk(); noUrut++; document.getElementById('noTransaksi').textContent=generateNo(); }
+      if (!res.ok) { const e = await res.json(); alert(e.error || 'Gagal!'); }
+      else {
+        const h = await res.json();
+        tampilNota(h.transaksi);
+        await loadProduk();
+        noUrut++;
+        document.getElementById('noTransaksi').textContent = generateNo();
+      }
     } catch { alert('Tidak bisa terhubung ke server!'); }
 
-    btn.disabled=false; btn.textContent='✅ Bayar Sekarang';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ti ti-check"></i> Bayar Sekarang';
   }
 
   function tampilNota(trx) {
@@ -453,7 +878,7 @@
       <div class="nota-info-row"><span class="nota-info-label">Waktu</span><span class="nota-info-val">${new Date(trx.waktu).toLocaleTimeString('id-ID')}</span></div>
       <div class="nota-info-row"><span class="nota-info-label">Kasir</span><span class="nota-info-val">${trx.kasir}</span></div>`;
 
-    document.getElementById('notaItems').innerHTML = trx.items.map(i=>`
+    document.getElementById('notaItems').innerHTML = trx.items.map(i => `
       <div class="nota-item">
         <span class="nota-item-nama">${i.nama}</span>
         <span class="nota-item-qty">${i.qty}</span>
@@ -468,33 +893,32 @@
       <div class="nota-s-row"><span>Uang Diterima</span><span>${usd(trx.bayar)}</span></div>
       <div class="nota-s-row nota-s-kembalian"><span>Kembalian</span><span>${usd(trx.kembalian)}</span></div>`;
 
-    // Barcode visual
-    let bars='';
-    for(let i=0;i<45;i++){
-      const h=Math.floor(Math.random()*20)+10;
-      const w=Math.random()>0.5?2:1;
-      bars+=`<div style="width:${w}px;height:${h}px;background:#475569;border-radius:1px"></div>`;
+    let bars = '';
+    for (let i=0; i<45; i++) {
+      const h = Math.floor(Math.random()*20)+10;
+      const w = Math.random()>0.5 ? 2 : 1;
+      bars += `<div style="width:${w}px;height:${h}px;background:#475569;border-radius:1px"></div>`;
     }
-    document.getElementById('notaBarcode').innerHTML=bars;
-
-    document.getElementById('modalStruk').style.display='flex';
+    document.getElementById('notaBarcode').innerHTML = bars;
+    document.getElementById('modalStruk').style.display = 'flex';
   }
 
   function tutupNota() {
-    document.getElementById('modalStruk').style.display='none';
-    keranjang=[];
-    document.getElementById('diskon').value=0;
-    document.getElementById('uangDiterima').value='';
-    document.getElementById('kembalianBox').style.display='none';
+    document.getElementById('modalStruk').style.display = 'none';
+    keranjang = [];
+    document.getElementById('diskon').value = 0;
+    document.getElementById('uangDiterima').value = '';
+    document.getElementById('kembalianBox').style.display = 'none';
     renderKeranjang();
   }
 
   function keluar() {
-    localStorage.removeItem('token'); localStorage.removeItem('user');
-    window.location.href='index.html';
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = 'index.html';
   }
 
-  function usd(n) { return '$ '+Number(n||0).toLocaleString('en-US'); }
+  function usd(n) { return '$ ' + Number(n||0).toLocaleString('en-US'); }
 
   loadProduk();
 </script>
