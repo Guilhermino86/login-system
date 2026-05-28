@@ -68,11 +68,37 @@
       color: #64748b; text-decoration: none;
       font-size: 13px; font-weight: 500;
       transition: all 0.12s;
+      cursor: pointer;
     }
     .nav-item i { font-size: 17px; flex-shrink: 0; }
     .nav-item:hover { background: rgba(255,255,255,0.06); color: #e2e8f0; }
     .nav-item.aktif { background: rgba(22,163,74,0.15); color: #4ade80; }
     .nav-item.aktif i { color: #4ade80; }
+
+    .nav-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin: 6px 8px;
+    }
+
+    /* ── TOMBOL DASHBOARD — dibuat lebih mencolok ── */
+    .nav-item-dashboard {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 11px; border-radius: 8px;
+      color: #94a3b8; text-decoration: none;
+      font-size: 13px; font-weight: 600;
+      transition: all 0.15s;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.06);
+      margin-bottom: 4px;
+    }
+    .nav-item-dashboard i { font-size: 17px; flex-shrink: 0; color: #94a3b8; }
+    .nav-item-dashboard:hover {
+      background: rgba(255,255,255,0.1);
+      color: #f1f5f9;
+      border-color: rgba(255,255,255,0.12);
+    }
+    .nav-item-dashboard:hover i { color: #f1f5f9; }
 
     .sidebar-footer {
       padding: 10px;
@@ -387,7 +413,7 @@
     .btn-bayar:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
     .btn-bayar i { font-size: 16px; }
 
-    /* ── NOTA (TIDAK DIUBAH) ── */
+    /* ── NOTA ── */
     .nota-overlay {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.65);
@@ -534,6 +560,12 @@
     </div>
   </div>
   <nav class="sidebar-nav">
+    <!-- ✅ FIX: Tombol Dashboard — navigasi langsung tanpa reload auth -->
+    <a href="dashboard.html" class="nav-item-dashboard" id="btnDashboard">
+      <i class="ti ti-layout-dashboard"></i>
+      <span>Dashboard</span>
+    </a>
+    <div class="nav-divider"></div>
     <a href="kasir.html"   class="nav-item aktif"><i class="ti ti-receipt"></i><span>Kasir</span></a>
     <a href="produk.html"  class="nav-item"><i class="ti ti-package"></i><span>Produk</span></a>
     <a href="riwayat.html" class="nav-item"><i class="ti ti-clipboard-list"></i><span>Riwayat</span></a>
@@ -543,7 +575,7 @@
     <div class="user-avatar" id="avatarSidebar">K</div>
     <div>
       <div class="user-nama" id="namaSidebar">-</div>
-      <div class="user-role">Kasir</div>
+      <div class="user-role" id="roleSidebar">Kasir</div>
     </div>
     <button class="btn-logout" onclick="keluar()" title="Keluar">
       <i class="ti ti-logout"></i>
@@ -635,11 +667,10 @@
   </div>
 </main>
 
-<!-- NOTA PREMIUM (tidak diubah) -->
+<!-- NOTA -->
 <div class="nota-overlay" id="modalStruk" style="display:none">
   <div class="nota-wrap">
     <div class="nota" id="notaPrint">
-
       <div class="nota-head">
         <div class="nota-logo">✦</div>
         <div class="nota-nama">SKINTHESIA</div>
@@ -652,18 +683,14 @@
           <span>◆</span><span class="nota-divider-line"></span><span>◆</span>
         </div>
       </div>
-
       <div class="nota-info" id="notaInfo"></div>
       <div class="nota-garis"></div>
-
       <div class="nota-th">
         <span>ITEM</span><span>QTY</span><span>HARGA</span><span>TOTAL</span>
       </div>
       <div class="nota-items" id="notaItems"></div>
       <div class="nota-garis"></div>
-
       <div class="nota-summary" id="notaSummary"></div>
-
       <div class="nota-foot">
         <div class="nota-foot-divider">
           <span>◆</span><span class="nota-divider-line"></span><span>◆</span>
@@ -673,9 +700,7 @@
         <div class="nota-web">skin-thesia.up.railway.app</div>
         <div class="nota-barcode" id="notaBarcode"></div>
       </div>
-
     </div>
-
     <div class="nota-btns">
       <button class="nota-btn-print" onclick="window.print()">🖨️ Print Nota</button>
       <button class="nota-btn-selesai" onclick="tutupNota()">✅ Selesai</button>
@@ -686,10 +711,25 @@
 <script>
   const token = localStorage.getItem('token');
   const user  = JSON.parse(localStorage.getItem('user') || '{}');
-  if (!token) window.location.href = 'index.html';
+
+  // ✅ FIX UTAMA: Hanya redirect ke login jika memang tidak ada token.
+  // Tidak ada pengecekan role di sini — semua role boleh pakai kasir.
+  if (!token) {
+    window.location.href = 'index.html';
+  }
+
+  // ✅ FIX: Tombol dashboard navigasi langsung — token tetap ada di localStorage
+  // sehingga dashboard.html bisa langsung terbuka tanpa perlu login ulang.
+  document.getElementById('btnDashboard').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = 'dashboard.html';
+  });
 
   document.getElementById('namaSidebar').textContent = user.nama || '-';
   document.getElementById('avatarSidebar').textContent = (user.nama || 'K')[0].toUpperCase();
+  document.getElementById('roleSidebar').textContent = user.role
+    ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+    : 'Kasir';
 
   const now = new Date();
   document.getElementById('tanggalSekarang').textContent = now.toLocaleDateString('id-ID', {
@@ -707,6 +747,7 @@
   async function loadProduk() {
     try {
       const res = await fetch('/api/produk', { headers: {'Authorization':'Bearer '+token} });
+      if (res.status === 401) { keluar(); return; }
       semuaProduk = await res.json();
       renderProduk(semuaProduk);
     } catch {
