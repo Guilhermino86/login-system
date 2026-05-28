@@ -64,6 +64,9 @@ function cekAdmin(req, res) {
   return sesi;
 }
 
+// Role yang diizinkan
+const ROLES_VALID = ['admin', 'manager', 'kasir'];
+
 // =============================================
 //   AUTH ROUTES
 // =============================================
@@ -81,7 +84,7 @@ app.post('/api/register', async (req, res) => {
   const passwordTerenkripsi = await bcrypt.hash(password, 10);
   db.data.users.push({
     id: Date.now(), nama, email, password: passwordTerenkripsi,
-    role, createdAt: new Date().toISOString(), aktif: true
+    role, kasirNum: null, createdAt: new Date().toISOString(), aktif: true
   });
   await db.write();
   res.status(201).json({ message: 'Registrasi berhasil! Silakan login.' });
@@ -101,7 +104,6 @@ app.post('/api/login', async (req, res) => {
   const cocok = await bcrypt.compare(password, user.password);
   if (!cocok) return res.status(401).json({ error: 'Email atau password salah!' });
 
-  // Set role admin kalau email cocok
   const role = email === ADMIN_EMAIL ? 'admin' : (user.role || 'kasir');
 
   const token = jwt.sign(
@@ -161,13 +163,84 @@ app.get('/api/users', (req, res) => {
   const sesi = cekAdmin(req, res);
   if (!sesi) return;
   const users = db.data.users.map(u => ({
-    id: u.id, nama: u.nama, email: u.email,
-    role: u.role, aktif: u.aktif !== false, createdAt: u.createdAt
+    id:        u.id,
+    nama:      u.nama,
+    email:     u.email,
+    role:      u.role,
+    kasirNum:  u.kasirNum || null,
+    aktif:     u.aktif !== false,
+    createdAt: u.createdAt
   }));
   res.json(users);
 });
 
-// PUT nonaktifkan/aktifkan user (admin only)
+// ─────────────────────────────────────────────
+// POST /api/users — Tambah user baru (admin only)
+// ─────────────────────────────────────────────
+app.post('/api/users', async (req, res) => {
+  const sesi = cekAdmin(req, res);
+  if (!sesi) return;
+
+  const { nama, email, password, role, kasirNum } = req.body;
+
+  // Validasi field wajib
+  if (!nama || !email || !password || !role)
+    return res.status(400).json({ error: 'Nama, email, password, dan role wajib diisi!' });
+
+  if (password.length < 6)
+    return res.status(400).json({ error: 'Password minimal 6 karakter!' });
+
+  if (!ROLES_VALID.includes(role))
+    return res.status(400).json({ error: 'Role tidak valid! Pilih: admin, manager, atau kasir.' });
+
+  // Cek email sudah dipakai
+  if (db.data.users.find(u => u.email === email))
+    return res.status(409).json({ error: 'Email sudah terdaftar!' });
+
+  // Jika kasir — wajib kasirNum & cek konflik nomor
+  if (role === 'kasir') {
+    if (!kasirNum)
+      return res.status(400).json({ error: 'Nomor kasir wajib diisi untuk role kasir!' });
+
+    const numInt = parseInt(kasirNum);
+    const konflik = db.data.users.find(u => u.role === 'kasir' && u.kasirNum === numInt);
+    if (konflik)
+      return res.status(409).json({
+        error: `Kasir ${numInt} sudah dipakai oleh ${konflik.nama}!`
+      });
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const userBaru = {
+    id:        Date.now(),
+    nama,
+    email,
+    password:  passwordHash,
+    role,
+    kasirNum:  role === 'kasir' ? parseInt(kasirNum) : null,
+    aktif:     true,
+    createdAt: new Date().toISOString()
+  };
+
+  db.data.users.push(userBaru);
+  await db.write();
+
+  res.status(201).json({
+    message: `Akun "${nama}" berhasil dibuat!`,
+    user: {
+      id:       userBaru.id,
+      nama:     userBaru.nama,
+      email:    userBaru.email,
+      role:     userBaru.role,
+      kasirNum: userBaru.kasirNum,
+      aktif:    userBaru.aktif
+    }
+  });
+});
+
+// ─────────────────────────────────────────────
+// PUT /api/users/:id/toggle — Aktif/nonaktif
+// ─────────────────────────────────────────────
 app.put('/api/users/:id/toggle', async (req, res) => {
   const sesi = cekAdmin(req, res);
   if (!sesi) return;
@@ -175,30 +248,54 @@ app.put('/api/users/:id/toggle', async (req, res) => {
   const index = db.data.users.findIndex(u => u.id === id);
   if (index === -1) return res.status(404).json({ error: 'User tidak ditemukan!' });
   if (db.data.users[index].email === ADMIN_EMAIL)
-    return res.status(400).json({ error: 'Tidak bisa menonaktifkan admin!' });
+    return res.status(400).json({ error: 'Tidak bisa menonaktifkan admin utama!' });
   db.data.users[index].aktif = !db.data.users[index].aktif;
   await db.write();
   res.json({ message: 'Status user diupdate!', aktif: db.data.users[index].aktif });
 });
 
-// PUT ganti role user (admin only)
+// ─────────────────────────────────────────────
+// PUT /api/users/:id/role — Ganti role + kasirNum
+// ─────────────────────────────────────────────
 app.put('/api/users/:id/role', async (req, res) => {
   const sesi = cekAdmin(req, res);
   if (!sesi) return;
+
   const id = parseInt(req.params.id);
-  const { role } = req.body;
-  if (!['admin', 'kasir'].includes(role))
-    return res.status(400).json({ error: 'Role tidak valid!' });
+  const { role, kasirNum } = req.body;
+
+  if (!ROLES_VALID.includes(role))
+    return res.status(400).json({ error: 'Role tidak valid! Pilih: admin, manager, atau kasir.' });
+
   const index = db.data.users.findIndex(u => u.id === id);
   if (index === -1) return res.status(404).json({ error: 'User tidak ditemukan!' });
+
   if (db.data.users[index].email === ADMIN_EMAIL)
     return res.status(400).json({ error: 'Tidak bisa mengubah role admin utama!' });
+
+  // Kalau ganti ke kasir, cek konflik nomor
+  if (role === 'kasir' && kasirNum) {
+    const numInt = parseInt(kasirNum);
+    const konflik = db.data.users.find(
+      u => u.role === 'kasir' && u.kasirNum === numInt && u.id !== id
+    );
+    if (konflik)
+      return res.status(409).json({
+        error: `Kasir ${numInt} sudah dipakai oleh ${konflik.nama}!`
+      });
+    db.data.users[index].kasirNum = numInt;
+  } else {
+    db.data.users[index].kasirNum = null;
+  }
+
   db.data.users[index].role = role;
   await db.write();
   res.json({ message: 'Role user diupdate!' });
 });
 
-// DELETE user (admin only)
+// ─────────────────────────────────────────────
+// DELETE /api/users/:id — Hapus user
+// ─────────────────────────────────────────────
 app.delete('/api/users/:id', async (req, res) => {
   const sesi = cekAdmin(req, res);
   if (!sesi) return;
@@ -228,7 +325,11 @@ app.post('/api/produk', async (req, res) => {
   const { nama, emoji, kategori, harga, stok } = req.body;
   if (!nama || harga === undefined || stok === undefined)
     return res.status(400).json({ error: 'Nama, harga, dan stok wajib diisi!' });
-  const produk = { id: Date.now(), nama, emoji: emoji || '📦', kategori: kategori || '', harga: parseInt(harga), stok: parseInt(stok), createdAt: new Date().toISOString() };
+  const produk = {
+    id: Date.now(), nama, emoji: emoji || '📦',
+    kategori: kategori || '', harga: parseInt(harga),
+    stok: parseInt(stok), createdAt: new Date().toISOString()
+  };
   db.data.produk.push(produk);
   await db.write();
   res.status(201).json(produk);
@@ -241,7 +342,10 @@ app.put('/api/produk/:id', async (req, res) => {
   const index = db.data.produk.findIndex(p => p.id === id);
   if (index === -1) return res.status(404).json({ error: 'Produk tidak ditemukan!' });
   const { nama, emoji, kategori, harga, stok } = req.body;
-  db.data.produk[index] = { ...db.data.produk[index], nama, emoji, kategori, harga: parseInt(harga), stok: parseInt(stok) };
+  db.data.produk[index] = {
+    ...db.data.produk[index], nama, emoji,
+    kategori, harga: parseInt(harga), stok: parseInt(stok)
+  };
   await db.write();
   res.json(db.data.produk[index]);
 });
@@ -263,16 +367,23 @@ app.post('/api/transaksi', async (req, res) => {
   const sesi = cekToken(req, res);
   if (!sesi) return;
   const { noTransaksi, items, subtotal, diskon, total, bayar, kembalian, kasir } = req.body;
-  if (!items || !items.length) return res.status(400).json({ error: 'Items tidak boleh kosong!' });
+  if (!items || !items.length)
+    return res.status(400).json({ error: 'Items tidak boleh kosong!' });
 
   for (const item of items) {
     const idx = db.data.produk.findIndex(p => p.id === item.id);
-    if (idx === -1) return res.status(404).json({ error: `Produk ${item.nama} tidak ditemukan!` });
-    if (db.data.produk[idx].stok < item.qty) return res.status(400).json({ error: `Stok ${item.nama} tidak cukup!` });
+    if (idx === -1)
+      return res.status(404).json({ error: `Produk ${item.nama} tidak ditemukan!` });
+    if (db.data.produk[idx].stok < item.qty)
+      return res.status(400).json({ error: `Stok ${item.nama} tidak cukup!` });
     db.data.produk[idx].stok -= item.qty;
   }
 
-  const trx = { id: Date.now(), noTransaksi, items, subtotal, diskon, total, bayar, kembalian, kasir, waktu: new Date().toISOString() };
+  const trx = {
+    id: Date.now(), noTransaksi, items,
+    subtotal, diskon, total, bayar, kembalian,
+    kasir, waktu: new Date().toISOString()
+  };
   db.data.transaksi.push(trx);
   await db.write();
   res.status(201).json({ message: 'Transaksi berhasil!', transaksi: trx });
